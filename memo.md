@@ -90,4 +90,4 @@ https://github.com/vuejs/vue-hackernews-2.0
 
 
 ### 闭包作用域原型链
-词法作用域、动态作用域
+https://github.com/getify/You-Dont-Know-JS/blob/1ed-zh-CN/scope%20%26%20closures/ch1.md
