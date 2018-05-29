@@ -89,5 +89,8 @@ https://github.com/vuejs/vue-hackernews-2.0
 ### fis3的打包机制
 
 
-### 闭包作用域原型链
-https://github.com/getify/You-Dont-Know-JS/blob/1ed-zh-CN/scope%20%26%20closures/ch1.md
+### 作用域
+[作用域](https://github.com/getify/You-Dont-Know-JS/blob/1ed-zh-CN/scope%20%26%20closures/ch1.md)
+
+### `eval`和`with`
+这俩语句会降低js性能的原因是js引擎在编译阶段遇到这俩二货会基本上停止**编译阶段**的性能优化工作，因为它俩提供的是**动态作用域**，这会影响词法解析器生成词法作用域的过程，导致不能优化代码。
