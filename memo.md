@@ -94,3 +94,80 @@ https://github.com/vuejs/vue-hackernews-2.0
 
 ### `eval`和`with`
 这俩语句会降低js性能的原因是js引擎在编译阶段遇到这俩二货会基本上停止**编译阶段**的性能优化工作，因为它俩提供的是**动态作用域**，这会影响词法解析器生成词法作用域的过程，导致不能优化代码。
+
+
+### 事件委托的优缺点
+优点：
+- 减少事件注册，节省内存
+- 简化dom节点更新时，相应的事件更新
+- - 不用在新添加的节点上绑定事件
+- - 删除某个dom时，不用移除绑定的事件
+
+缺点：
+- 事件委托基于冒泡，对不冒泡对事件不支持委托绑定；
+- 如果层级过多，冒泡过程中，可能会被某层阻止掉；
+- 理论上会导致浏览器频繁调用处理函数，建议就近委托；
+- 所有的事件都用代理可能会出现事件误判；
+
+原生js实现对事件委托
+```javascript
+function delegateEvent(interfaceEle, selector, type, fn){
+
+    if(interfaceEle,addEventListener){
+        interfaceEle.addEventListener(type, eventfn);
+    } else {
+        interfaceEle.attachEvent('on'+type, eventfn);
+    }
+
+    function eventfn(e){
+        var e = e || window.event;
+        var target = e.target || e.srcElement;
+
+        if(matchSelector(target, selector)){
+            if(fn){
+                fn.call(target, e);
+            }
+        }
+    }
+}
+
+function matchSelector(ele, selector){
+    if(selector.charAt(0) === '#'){
+        return ele.id === selector.slice(1);
+    }
+
+    if(selector.charAt(0) === '.'){
+        return ('' + ele.className + '').indexOf('' + selector.slice(1) + '') != -1
+    }
+
+    return ele.tagName.toLowerCase() === seleclor.toLowerCase();
+}
+
+var odiv = document.getElementById('oDiv');
+delegateEvent(odiv, 'a', 'click', function(){
+    alert(1);
+})
+```
+
+
+### 变量提升和函数提升
+```javascript
+function a(){
+    console.log(b);  // undefined
+    var b = 1;
+}
+a();
+```
+上面的方法输出undefined，它等价于
+```javascript
+
+function a(){
+    var b;
+    console.log(b);
+    b = 1;
+}
+a();
+```
+
+### 前端路由
+
