@@ -90,7 +90,7 @@ https://github.com/vuejs/vue-hackernews-2.0
 
 
 ### 作用域
-[作用域](https://github.com/getify/You-Dont-Know-JS/blob/1ed-zh-CN/scope%20%26%20closures/ch1.md)
+[作用域](http://hubidankan.cn/post/5b0e1cd25963ea40b18e2e7b)
 
 ### `eval`和`with`
 这俩语句会降低js性能的原因是js引擎在编译阶段遇到这俩二货会基本上停止**编译阶段**的性能优化工作，因为它俩提供的是**动态作用域**，这会影响词法解析器生成词法作用域的过程，导致不能优化代码。
@@ -109,7 +109,7 @@ https://github.com/vuejs/vue-hackernews-2.0
 - 理论上会导致浏览器频繁调用处理函数，建议就近委托；
 - 所有的事件都用代理可能会出现事件误判；
 
-原生js实现对事件委托
+**原生js实现对事件委托**
 ```javascript
 function delegateEvent(interfaceEle, selector, type, fn){
 
@@ -168,6 +168,47 @@ function a(){
 }
 a();
 ```
+
+### 变量提升
+在一个作用域中，变量的声明位置是**无关紧要**的。
+在ES6中，使用let声明的变量不存在变量提升。
+
+### typeof和instanceOf
+js判断变量类型的方法，最常用的一种方法是toString
+```javascript
+function isFunction(o){
+    // return Object.prototype.toString.call(o) === '[object Function]';
+    // another way (use RegExp)
+    return Object.prototype.toString.call(o).match(/\[object (.*?)\]/)[1] === 'Function';
+}
+
+// 进阶版
+// 获取变量对象类型
+function getType(o){
+    return Object.prototype.toString.call(o).match(/\[object (.*?)\]/)[1];
+}
+
+getType(1); // Number
+getType(''); // String
+getType(true); // Boolean
+getType(Boolean(false)); // Boolean
+```
+### js中String.prototype.match的使用
+String.prototype.match(regexp);
+根据正则表达式regexp对字符串进行匹配。
+```javascript
+'abc'.match(/a/); // ["a", index: 0, input: "abc", groups: undefined]
+```
+如果正则表达式不包含 g 标志，则 str.match() 会返回和 RegExp.exec() 相同的结果。而且返回的 Array 拥有一个额外的 input 属性，该属性包含被解析的原始字符串。另外，还拥有一个 index 属性，该属性表示匹配结果在原字符串中的索引（以0开始）。
+
+如果正则表达式包含 g 标志，则该方法返回一个 Array ，它包含所有匹配的子字符串而不是匹配对象。捕获组不会被返回(即不返回index属性和input属性)。如果没有匹配到，则返回  null 。
+```javascript
+// 带 g 标志对使用
+'abcdefg'.match(/[a-d]/g); //["a", "b", "c", "d"]
+```
+
+### String.prototype.match 和 RegExp 的比较
+
 
 ### 前端路由
 
