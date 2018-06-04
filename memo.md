@@ -207,8 +207,59 @@ String.prototype.match(regexp);
 'abcdefg'.match(/[a-d]/g); //["a", "b", "c", "d"]
 ```
 
-### String.prototype.match 和 RegExp 的比较
-
 
 ### 前端路由
+前端路由的实现原理：
+1. location的hash
+2. H5的history API
 
+前端路由的适用场景一般是SPA（单页面应用），这种情境下，页面一般多是更新部分页面。在这种情况下，可以充分利用现有的页面，而只是向服务端请求需要更新地数据。
+
+优点：
+1. 不用重新跳页，用户体验更加舒服，同时后端服务压力更小；
+
+缺点：
+？？？（需要程序验证） 1. 使用浏览器对前进，后退键会重新发送请求，没有合理地利用缓存
+
+
+### HTML5的history中的pushState()和replaceState()
+可以理解为window.location.hash美丽版本，这两个方法可以在不刷新页面的前提下更改页面地URL，并修改浏览历史记录。
+对于window.location.hash来说，它的的变化也不会引起页面刷新，但是URL后面总跟着一个“#”，对于有重度洁癖的人来说，并不是很舒服。
+但是，pushState和replaceState并不只是用来实现SPA的，他还有更加本质的用法。SPA只是它的特性刚好适用罢了。
+
+
+
+### MVC、MVP 和 MVVM
+- MVC（Model View Controller）：三者当中最早被提出来，初步解决了View（视图层）同Model（数据模型层）的分离问题，使得展示独立于数据和业务逻辑，便于产品更快的迭代更新；
+- MVP（Model View Presenter）：MVC的一个变种，在MVP中，将大量的处理逻辑放在了Presenter中，View和Model在理论设计上，不再追求完全关联（虽然MVC也是这么想的，但是也要看各家的具体实现标准）。
+- MVVM（Model View ViewModel）：将原来设计模式中，View和Model关联的部分放到了ViewModel层中，View和Model完全分离。ViewModel除了承担了原来Controller层的功能，还作为View和Model间的缓冲区。必然的，数据和试图的之间的业务逻辑也就放在了ViewModel中。
+
+
+### PWA && 异步交互的最高级体验
+PWA, Progressive Web App，渐进式网页应用。
+也可以称作谷歌版的小程序，它是一种利用离线缓存技术，让Web应用的使用具有Native App的感觉。
+具体原理是利用浏览器的缓存技术，通过ServiceWorker实现。
+ServicerWorker会拦截网络请求，并根据网络是否可用判断是否使用缓存数据或者更新数据。
+
+
+### 利用正则查询URL中参数
+```javascript
+function queryParam(key, url){
+    var reg = new RegExp(key + '=([\\d|a-z|A-Z]+)&?');
+    return String(url).match(reg) ? url.match(reg)[1] : '';
+}
+```
+
+// TODO
+### js的原型链
+普通对象、函数对象
+构造函数、实例
+原型对象
+每个函数对象都有一个prototype属性，指向该函数对象的构造函数。
+
+定律一： **每个对象都有一个__proto__属性，但函数对象还有个prototype属性。**
+
+原型对象是构造函数的一个实例。
+
+
+// TODO js内存泄漏
