@@ -252,9 +252,15 @@ function queryParam(key, url){
 
 // TODO
 ### js的原型链
-普通对象、函数对象
-构造函数、实例
-原型对象
+首先，js中的对象分为**普通对象**和**函数对象**。
+任意函数都可以作为构造函数，它们都是函数对象。
+通过构造函数new出来的对象叫做实例，它是普通对象。
+
+函数对象都有一个`prototype`属性，这个属性指向该构造函数的原型对象。
+那么原型对象有什么用呢？通过构造函数生成的实例，都会有一个`__proto__`属性，该属性指向其构造函数的原型对象，也就是构造函数的prototype 属性。通过`__proto__`，实例会获取构造函数的原型对象上的属性。这时，便也就形成了原型链。
+
+构造函数生成实例是通过new操作符实现的，那么new操作符的具体原理可以参考下面的介绍。
+
 每个函数对象都有一个prototype属性，指向该函数对象的构造函数。
 
 定律一： **每个对象都有一个__proto__属性，但函数对象还有个prototype属性。**
@@ -262,4 +268,60 @@ function queryParam(key, url){
 原型对象是构造函数的一个实例。
 
 
+参考文章
+[最详尽的 JS 原型与原型链终极详解，没有「可能是」。（一）](https://www.jianshu.com/p/dee9f8b14771)
+[最详尽的 JS 原型与原型链终极详解，没有「可能是」。（二）](https://www.jianshu.com/p/652991a67186)
+[最详尽的 JS 原型与原型链终极详解，没有「可能是」。（三）](https://www.jianshu.com/p/a4e1e7b6f4f8)
+
+
+通过原型链实现继承
+```javascript
+function A(){
+    this.name = 'a';
+}
+
+function B(){
+    this.type = 'b';
+}
+
+B.prototype = new A;
+
+let b = new B();
+
+console.log(b);
+// {
+//     type: "b",
+//     __proto__: {
+//         name: "a",
+//         __proto__: Object
+//     }
+// }
+
+
+```
+
+ *A instanceof B 的原理*
+**查看对象B的prototype属性指向的原型对象是否在对象A的原型链上，若在则返回true，若不在则返回false。**
+
+
+*new运算符的原理*
+
+1. 一个新对象被创建。它继承自foo.prototype。
+2. 构造函数返回一个对象。在执行的时候，相应的传参会被传入，同时上下文(this)会被指定为这个新的实例。
+3. new foo等同于new foo(), 只能用在不传递任何参数的情况
+4. 如果构造函数反悔了一个对象，那个这个对象会取代整个new出来的结果。如果构造函数没有返回对象，那个new出来的结果为步骤1创建的对象。
+下面根据new的工作原理通过代码手动实现一下new运算符:
+```javascript
+var new2 = function (func) {
+    var o = Object.create(func.prototype); 　　 //创建对象
+    var k = func.call(o);　　　　　　　　　　　　　//改变this指向，把结果付给k
+    if (typeof k === 'object') {　　　　　　　　　//判断k的类型是不是对象
+        return k;　　　　　　　　　　　　　　　　　 //是，返回k
+    } else {
+        return o;　　　　　　　　　　　　　　　　　 //不是返回返回构造函数的执行结果
+    }
+}
+```
 // TODO js内存泄漏
+
+// Object.defineProperty()
