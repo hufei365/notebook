@@ -324,4 +324,47 @@ var new2 = function (func) {
 ```
 // TODO js内存泄漏
 
+// 前端性能优化
+
 // Object.defineProperty()
+
+// JS的设计模式
+
+// 水平垂直布局
+
+// 盒模型内部机理
+
+// BFC（块级上下文）及其内部机制
+
+// jQuery 绑定事件的几种方式及区别
+
+// jQuery 插件编写方式及原理
+
+// Promise
+js是单线程程序，对于网络请求、浏览器事件处理等不得不采用异步方法。
+Promise 是异步编程的一种解决方案，相对比较传统的回调函数和事件，Promise更加强大。
+它是有社区最早提出和实现，ES6将其写进语言标准，统一用法，提供了原声的Promise对象。
+
+Promise的三个状态：pending、fulfilled、rejetched。
+pending: 进行中；
+fulfilled： 已成功；
+rejected：已失败
+
+状态变化关系只存在两种：
+- pending ————> fulfilled
+- pending ————> rejected
+而且，这三个状态不受外界影响。  怎么理解这句话？？为什么说这三个状态不受外界影响呢？处于何种目的，如何确保它不受外界影响。
+而且，状态一旦变成fulfilled 或 rejected，就再也无法改变，这个又是怎么做到的。
+
+Promise的优势在于链式调用。
+
+Promise.prototype.all()
+Promise.prototype.race()
+Promise.prototype.resolve();
+Promise.prototype.reject();
+
+参考文章
+[阮一峰的ES6 Promise部分](http://es6.ruanyifeng.com/#docs/promise)
+
+
+// JS的执行机制是什么，主要指异步程序处理
