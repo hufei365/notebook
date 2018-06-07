@@ -322,6 +322,51 @@ var new2 = function (func) {
     }
 }
 ```
+// JS执行机制
+*灵魂三问：*
+1. JS为什么是单线程的？
+2. 为什么需要异步？
+3. 单线程又是如何实现异步的？
+
+*答案：*
+1. JS最初被设计用在浏览器中
+> 场景描述:
+> 现在有2个进程,process1 process2,由于是多进程的JS,所以他们对同一个dom,同时进行操作
+> process1 删除了该dom,而process2 编辑了该dom,同时下达2个矛盾的命令,浏览器究竟该如何执行呢?
+2. JS为什么需要异步
+如果JS中不存在异步,只能自上而下执行,如果上一行解析时间很长,那么下面的代码就会被阻塞。
+对于用户而言,阻塞就意味着"卡死",这样就导致了很差的用户体验
+3. 单线程的JS如何实现异步
+通过Event Loop事件循环，理解了Event Loop 机制，也就理解了JS的执行机制
+
+
+首先明确两个概念：任务分为**同步任务**和**异步任务**。
+ps:*因为有些任务(比如超清图片加载)消耗时间较长，故而会有异步任务。*
+
+另外一个比较重要的概念：**Event Loop(事件循环)**。
+
+什么是Event Loop?
+1. 首先判断JS是同步还是异步,同步就进入主进程,异步就进入event table。
+2. 异步任务在event table中注册函数,当满足触发条件后,被推入event queue。
+3. 同步任务进入主线程后一直执行,直到主线程空闲时,才会去event queue中查看是否有可执行的异步任务,如果有就推入主进程中
+4. 主线程不断重复上面的三步。（事件循环）
+
+
+同步任务和异步任务都是广义概念，有更精细的任务定义：
+- macro-task（宏任务）：包括整体代码script，setTimeout，setInterval，setImmediate, I/O, UI rendering*
+- micro-task（微任务）：process.nextTick, Promises, Object.observe, MutationObserver
+在ES6中，microtask被称作job
+
+按照这种分类方式，JS的执行机制是：
+- 执行一个宏任务,过程中如果遇到微任务,就将其放到微任务的【事件队列】里
+- 当前宏任务执行完成后,会查看微任务的【事件队列】,并将里面全部的微任务依次执行完
+参考图：
+![宏任务微任务模式下的事件循环](http://p9jftl6n6.bkt.clouddn.com/event%20loop.png)
+另一个PS: *js中事件队列的维护是由浏览器维护的*
 // TODO js内存泄漏
 
 // Object.defineProperty()
+
+// setTimeout 和 setInterval的区别（底层机理）
+
+// FIS3打包慢的问题
