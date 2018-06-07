@@ -331,88 +331,107 @@ var new2 = function (func) {
 
 *答案：*
 1. JS最初被设计用在浏览器中
-> 场景描述:
-> 现在有2个进程,process1 process2,由于是多进程的JS,所以他们对同一个dom,同时进行操作
-> process1 删除了该dom,而process2 编辑了该dom,同时下达2个矛盾的命令,浏览器究竟该如何执行呢?
+> 假设JS支持多线程，那么会有如下场景。有2个进程：process1 和 process2，由于是多进程的JS，所以他们对同一个dom，同时进行操作。process1 删除了该dom，而 process2 编辑了该dom。同时下达2个矛盾的命令，浏览器究竟该如何执行呢？
+
 2. JS为什么需要异步
-如果JS中不存在异步,只能自上而下执行,如果上一行解析时间很长,那么下面的代码就会被阻塞。
-对于用户而言,阻塞就意味着"卡死",这样就导致了很差的用户体验
+如果JS中不存在异步，只能自上而下执行，如果上一行解析时间很长，那么下面的代码就会被阻塞。
+对于用户而言，阻塞就意味着“卡死”，这样就导致了很差的用户体验。
+
 3. 单线程的JS如何实现异步
 通过Event Loop事件循环，理解了Event Loop 机制，也就理解了JS的执行机制
 
 
 首先明确两个概念：任务分为**同步任务**和**异步任务**。
-ps:*因为有些任务(比如超清图片加载)消耗时间较长，故而会有异步任务。*
+ps：*因为有些任务(比如超清图片加载、网络请求、DOM事件等)消耗时间较长，故而会有异步任务。*
 
 另外一个比较重要的概念：**Event Loop(事件循环)**。
 
 什么是Event Loop?
-1. 首先判断JS是同步还是异步,同步就进入主进程,异步就进入event table。
-2. 异步任务在event table中注册函数,当满足触发条件后,被推入event queue。
-3. 同步任务进入主线程后一直执行,直到主线程空闲时,才会去event queue中查看是否有可执行的异步任务,如果有就推入主进程中
-4. 主线程不断重复上面的三步。（事件循环）
-
+1. 首先判断JS任务是同步还是异步，同步就进入主进程，异步就进入event table。
+2. 异步任务在event table中注册函数，当满足触发条件后，回调会被推入event queue。
+3. 同步任务进入主线程后一直执行，直到主线程空闲时，才会去event queue中查看是否有可执行的异步任务，如果有就推入主进程中
+4. 主线程不断重复上面的三步。
+上面的一系列步骤就是Event Loop（事件循环）
 
 同步任务和异步任务都是广义概念，有更精细的任务定义：
-- macro-task（宏任务）：包括整体代码script，setTimeout，setInterval，setImmediate, I/O, UI rendering*
-- micro-task（微任务）：process.nextTick, Promises, Object.observe, MutationObserver
+- macro-task（宏任务）：包括整体代码script，setTimeout，setInterval，setImmediate， I/O， UI rendering*
+- micro-task（微任务）：process.nextTick， Promises， Object.observe， MutationObserver
 
 在ES6中，microtask被称作job
 
 按照这种分类方式，JS的执行机制是：
-- 执行一个宏任务,过程中如果遇到微任务,就将其放到微任务的【事件队列】里
-- 当前宏任务执行完成后,会查看微任务的【事件队列】,并将里面全部的微任务依次执行完
+1. 先执行一个宏任务，过程中如果遇到微任务，就将其放到微任务的【事件队列】里
+2. 当前宏任务执行完成后,会查看微任务的【事件队列】，并将里面全部的微任务依次执行完
+3. 然后再执行下一个宏任务
 
 参考图：
 ![宏任务微任务模式下的事件循环](http://p9jftl6n6.bkt.clouddn.com/event%20loop.png)
 
 另一个PS: *js中事件队列的维护是由浏览器维护的*
 
+
 ### Promise
 js是单线程程序，对于网络请求、浏览器事件处理等不得不采用异步方法。
 Promise 是异步编程的一种解决方案，相对比较传统的回调函数和事件，Promise更加强大。
-它是有社区最早提出和实现，ES6将其写进语言标准，统一用法，提供了原声的Promise对象。
+它是有社区最早提出和实现，ES6将其写进语言标准，统一用法，提供了原生的Promise对象。
 
 Promise的三个状态：pending、fulfilled、rejetched。
-pending: 进行中；
-fulfilled： 已成功；
-rejected：已失败
+pending: 初始状态，既不是成功，也不是失败状态
+fulfilled： 意味着操作成功完成
+rejected：意味着操作失败
 
 状态变化关系只存在两种：
 - pending ————> fulfilled
 - pending ————> rejected
+
 而且，这三个状态不受外界影响。  怎么理解这句话？？为什么说这三个状态不受外界影响呢？处于何种目的，如何确保它不受外界影响。
 而且，状态一旦变成fulfilled 或 rejected，就再也无法改变，这个又是怎么做到的。
 
 Promise的优势在于链式调用。
 
-Promise.prototype.all()
-Promise.prototype.race()
-Promise.prototype.resolve();
-Promise.prototype.reject();
+Promise.all()
+Promise.race()
+Promise.resolve();
+Promise.reject();
 
 参考文章
 [阮一峰的ES6 Promise部分](http://es6.ruanyifeng.com/#docs/promise)
+[JS - Promise使用详解3（jQuery中的Deferred）](http://www.hangge.com/blog/cache/detail_1639.html)
 
 
 // TODO js内存泄漏
 
-// 前端性能优化
+// TODO 前端性能优化
 
-// JS的设计模式
+// TODO JS的设计模式
 
-// 水平垂直布局
+// TODO 水平垂直布局
 
-// 盒模型内部机理
+// TODO 盒模型内部机理
 
-// BFC（块级上下文）及其内部机制
+// TODO BFC（块级上下文）及其内部机制
 
-// jQuery 绑定事件的几种方式及区别
+// TODO jQuery 绑定事件的几种方式及区别
+- bind/unbind
+- live/die
+- delegate/undelegate
+- on/off
 
-// jQuery 插件编写方式及原理
+#### bind的使用方式
+$(selector).bind(event,data,function)
+event：必需项；添加到元素的一个或多个事件，例如 click,dblclick等；
+单事件处理：例如 $(selector).bind("click",data,function);
+多事件处理：  1.利用空格分隔多事件，例如 $(selector).bind("click dbclick mouseout",data,function);
+            2.利用大括号灵活定义多事件，例如 $(selector).bind({event1:function, event2:function, ...})　
+            3.空格相隔方式：绑定较为死板，不能给事件单独绑定函数,适合处理多个事件调用同一函数情况；
+大括号替代方式：绑定较为灵活，可以给事件单独绑定函数；　　　  
+data：可选；需要传递的参数；
+function：必需；当绑定事件发生时，需要执行的函数
 
-// Object.defineProperty()
+// TODO jQuery 插件编写方式及原理
 
-// setTimeout 和 setInterval的区别（底层机理）
+// TODO Object.defineProperty()
 
-// FIS3打包慢的问题
+// TODO setTimeout 和 setInterval的区别（底层机理）
+
+// TODO FIS3打包慢的问题
