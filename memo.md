@@ -399,39 +399,63 @@ Promise.reject();
 [JS - Promise使用详解3（jQuery中的Deferred）](http://www.hangge.com/blog/cache/detail_1639.html)
 
 
+### jQuery 绑定事件的几种方式及区别
+- bind/unbind (所有的jQuery版本均支持)
+- live/die (1.9版本已经移除)
+- delegate/undelegate (jquery1.4.2+)
+- on/off (jquery1.7+)
+
+其中官方已经不推荐使用bind/delegate两种方式绑定事件，看jQuery源码发现这俩方法在deprecated.js中定义（deprecated:不赞成；反对）
+
+#### bind()
+`$(selector).bind( event, data, fn )`
+只能针对已经存在的元素进行事件的设置;
+`$('selector').click(fn);`是bind()的一种简写形式，本质上跟bind()没有区别。
+
+#### live()
+`$(selector).live( event, data, fn )`
+live方法的原理是将目标元素的事件委托到$(selector).context上，通常情况下$(selector).context === (jQuery()方法的第二个参数值，默认为document).
+jQuery.context主要用来限定第一个参数的查找范围
+![jQuery.context](http://p9jftl6n6.bkt.clouddn.com/jQuery%20context.png)
+因为live方法利用了事件委托的原理，故而对于动态增加的元素，也可以绑定事件（bind()方法做不到这一点）
+
+#### delegate()
+`$(delegateEle).delegate( targetEle, event, data, fn )`
+delegateEle: 委托元素对象（父级元素）；
+targetEle: 绑定事件的目标对象；
+因为delegate()方法利用了事件委托的原理，故而对于动态增加的元素，也可以绑定事件（bind()方法做不到这一点）
+delegate本身就含有"授权；委托"意思
+
+#### on()
+`$(selector).on( event, [targetEle], data, fn )`
+首先来说，live()和delegate归根结底都是调用on()方法的。
+其次讲讲on()方法本身的内容，这是官方推荐的绑定事件的方法。
+
+参数 | 描述 
+- | :-: 
+event | 一个或多个用空格分隔的事件类型和可选的命名空间
+targetEle | 可选。一个选择器字符串，用以过滤选定的元素，该选择器的后裔元素将调用处理程序。如果选择是空或被忽略，当它到达选定的元素，事件总是触发 
+data | 可选。作为event.data属性值传递给事件对象的额外数据对象以供事件处理函数处理
+fn |  该事件被触发时执行的函数。 false值也可以做一个函数的简写，返回false。
+
+
+
 // TODO js内存泄漏
+内存泄漏（memory leak）
+#### js发生内存泄漏的几种可能途径
+
+参考文章：
+[Chrome DevTools的Performance](https://nicholaslee119.github.io/2017/10/04/Chrome-Devtool-Performance%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/)
+[Chrome DevTools的Audits(Lighthouse)](http://top.css88.com/archives/1598)
 
 // TODO 前端性能优化
-
 // TODO JS的设计模式
-
 // TODO 水平垂直布局
-
 // TODO 盒模型内部机理
-
 // TODO BFC（块级上下文）及其内部机制
-
-// TODO jQuery 绑定事件的几种方式及区别
-- bind/unbind
-- live/die
-- delegate/undelegate
-- on/off
-
-#### bind的使用方式
-$(selector).bind(event,data,function)
-event：必需项；添加到元素的一个或多个事件，例如 click,dblclick等；
-单事件处理：例如 $(selector).bind("click",data,function);
-多事件处理：  1.利用空格分隔多事件，例如 $(selector).bind("click dbclick mouseout",data,function);
-            2.利用大括号灵活定义多事件，例如 $(selector).bind({event1:function, event2:function, ...})　
-            3.空格相隔方式：绑定较为死板，不能给事件单独绑定函数,适合处理多个事件调用同一函数情况；
-大括号替代方式：绑定较为灵活，可以给事件单独绑定函数；　　　  
-data：可选；需要传递的参数；
-function：必需；当绑定事件发生时，需要执行的函数
-
 // TODO jQuery 插件编写方式及原理
-
 // TODO Object.defineProperty()
-
 // TODO setTimeout 和 setInterval的区别（底层机理）
-
 // TODO FIS3打包慢的问题
+// TODO jQuery 的选择器引擎：Sizzle 
+// TODO 初探浏览器内核
