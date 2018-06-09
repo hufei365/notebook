@@ -339,12 +339,69 @@ function A(){
 function B(){
     this.name = 'B';
 }
+B.prototype = new A();
+
+var b = new B();
+console.log(b.skills); // ['say']
+
+// 原型链这种方式存在的问题，同样是跟引用类型有关系
+var b2 = new B();
+b2.skills.push('walk');
+console.log(b2.skills); // ["say", "walk"]
+console.log(b.skills); // ["say", "walk"] // 我们实际上并未修改b.skills的值，但是它确实发生了变化
 ```
 #### 借用构造函数
+```javascript
+function A(){
+    this.skills = ['say'];
+    this.Ican = function(){
+        console.log(this.skills);
+    }
+}
+A.prototype.Ican2 = function(){
+    console.log(this.skills);
+}
+function B(){
+    this.name = 'B';
+    A.call(this);
+}
+
+var b = new B();
+var b2 = new B();
+console.log(b.skills); 
+b2.skills.push('walk');
+console.log(b2.skills); // ["say", "walk"]
+console.log(b.skills); // [ "say"]
+
+console.log( b.Ican === b2.Ican ); // false  这便是这种模式存在的问题
+console.log( b.Ican2 ); // undefined  实例对象也无法访问原型对象中的方法
+```
+这种方式解决了原型链方式存在的引用类型的问题，但是它却不像是继承了，构造函数中的方法没有复用，原型对象上的方法也未实现继承。
+
 #### 组合继承
-#### 原型式继承
-#### 寄生式继承
-#### 寄生组合式继承
+```javascript
+function A(){
+    this.skills = ['say'];
+}
+A.prototype.Ican = function(){
+    console.log(this.skills);
+}
+function B(){
+    this.name = 'B';
+    A.call(this);
+}
+B.prototype = new A();
+var b = new B();
+var b2 = new B();
+b.Ican(); // ["say"]
+console.log( b.Ican === b2.Ican ); // true  这便是这种模式存在的问题
+```
+这种将原型链和借用构造函数组合使用对模式，是一种使用比较多的模式。
+
+#### 其它继承模式
+- 原型式继承
+- 寄生式继承
+- 寄生组合式继承
 
 原型链的构建是通过将一个构造函数的实例赋给另一个构造函数的原型实现的。子类型就能访问父类型中的属性和方法。
-原型链继承的问题在于所有的实例都共享原型链上的属性和方法，这会导致
+原型链继承的问题在于所有的实例都共享原型链上的属性和方法，这会导致一些意外的问题（参考原型链实现继承发生的问题）。
