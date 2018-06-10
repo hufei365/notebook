@@ -350,6 +350,8 @@ b2.skills.push('walk');
 console.log(b2.skills); // ["say", "walk"]
 console.log(b.skills); // ["say", "walk"] // 我们实际上并未修改b.skills的值，但是它确实发生了变化
 ```
+上图
+![原型链继承示意图(来源：JavaScript高级程序设计)](http://p9jftl6n6.bkt.clouddn.com/Prototype.png)
 #### 借用构造函数
 ```javascript
 function A(){
