@@ -1,0 +1,184 @@
+## JS中的引用类型
+
+在JS中，引用类型虽然看起来很像传统面向对象语言中的**类**，但它跟类有很大区别。这取决于JS中实现面向对象的方式。
+
+### Object类型
+创建Object类型的两种方式：
+- new Object()
+- 对象字面量
+
+【拓展一下】
+> 对象字面量在函数参数中一个应用场景。当函数含有较多参数时，如果其中有一些可选参数，可以考虑将这些参数放在一个对象当中。对于必需参数，使用命名参数；而可选的则放在一个对象（Object）当中。这样看起来，会更加清楚简洁。
+
+### Array类型
+Array.prototype.length 是个可写属性，可以通过修改它的值，很便捷地在数组末尾删除或添加项。
+```javascript
+var a = [1,2,3];
+console.log(a); // [1, 2, 3]
+a.length = 1;
+console.log(a); // [1]
+console.log(a[2]); // udefined
+a.length = 5;
+console.log(a); // [1, empty × 4]
+console.log(a[4]); // undefined
+```
+
+**数组检测**
+本来可以利用instanceof方法，但是它的问题在于假定只有一个全局作用域。当网页中包含多个框架的时候，实际上就存在多个全局执行环境。
+```javascript
+// 以下代码在Chrome **DevTool下执行**
+var  a = [];
+document.body.appendChild(document.createElement('iframe'));
+
+a instanceof window.frames[0].window.Array; //false
+a instanceof window.Array; // true
+// 这是因为
+window.frames[0].window.Array === window.Array; // false
+```
+针对上面的问题， ES5增加Array.isArray()方法。但是这个方法有浏览器兼容性问题。支持IE9+。
+
+**数组转换方法**
+toString、toLocalString、valueOf
+？？？问题来了，toString()与join()在底层实现上有区别么？
+
+**数组中的栈和队列方法**
+- 栈：后进先出（Last-In-First-Out）的结构；一般包含两中操作 **推入（push）**和 **移出（pop）**
+- 队列：先进先出（First-In-First-Out）；
+```javascript
+// 栈操作，是在数组尾部进行
+var a = [1,2,3];
+a.push(4);
+console.log(a); // [1, 2, 3, 4]
+a.pop();
+console.log(a); // [1, 2, 3]
+
+// shift 与 unshift
+a.shift();
+console.log(a);  // [2, 3]
+a.unshift(0);
+console.log(a); // [0, 2, 3]
+```
+
+**排序方法**
+- reverse() 
+- sort()
+**操作方法**
+- concat() 复制数组
+- slice()  截取数组的一段数据
+- splice() 可以对数组进行删除、新增和替换操作
+```javascript
+var a = [1,2,3];
+
+// 复制
+var a1 = a.concat(4, [5,6]);
+console.log(a); // [1, 2, 3]
+console.log(a1); // [1, 2, 3, 4, 5, 6]
+
+// 截取
+var a2 = a1.slice(1,3);
+console.log(a1); // [1, 2, 3, 4, 5, 6]
+console.log(a2); // [2,3]
+
+// 删除
+var a3 = a1.splice(0,2);
+console.log(a1); // [3, 4, 5, 6]
+console.log(a3); // [1, 2]
+
+// 新增
+var a4 = a1.splice(0, 0, 1,2);
+console.log(a1); // [1, 2, 3, 4, 5, 6]
+console.log(a4); // []
+
+// 替换
+var a5 = a1.splice(0, 2, 'a', 'b','c');
+console.log(a1); // ['a', 'b','c', 3, 4, 5, 6]
+console.log(a5); // [1, 2]
+```
+
+**位置方法**
+- indexOf()  从数组开头往后寻找
+- lastIndexOf() 从数组的末尾开始往前寻找
+
+浏览器支持IE9+
+
+**迭代方法**
+- filter 返回一个数组，这个数组由回调函数中返回true的项组成
+- every 如果回调函数对数组中的每一项都返回true，则返回true
+- some 如果回调函数对数组中的任意一项返回true，则返回true
+- map 返回回调函数操作每一项后的结果
+- forEach 没有任何返回
+这5个方法都不会修改原数组。
+```javascript
+var a = [1,2,3];
+console.log(a.filter(function(v){ return v > 2; })); // [3]
+console.log(a.every(function(v){ return v > 0; })); // true;
+console.log(a.every(function(v){ return v > 2; })); // false;
+console.log(a.some(function(v){ return v > 2; })); // true
+console.log(a.some(function(v){ return v > 3; })); // false
+console.log(a.map(function(v){ return v+1; })); // [2, 3, 4]
+console.log(a.forEach(function(v){return v})); //   undefined
+```
+支持浏览器IE9+。
+
+**归并方法**
+- reduce 迭代数组中的每一项，它的毁掉函数有四个参数（上次回调返回的结果， 当前项， 当前项的索引， 被迭代的数组）
+- reduceRight  reduce的反方向版本，从数组末尾开始迭代
+```javascript
+var a = [1,2,3,4];
+console.log(a.reduce(function(prev, cur, index, a){
+    return prev + cur;
+})); // 10
+```
+
+### Date类型
+两个方法：Date.parse() 和 Date.UTC(); 这两个方法用于获取传入日期的时间戳。
+Date.now()方法用于获取当前时间的时间戳。但是该方法支持IE9+，因此对于不兼容Date.now()方法的浏览器，可以考虑使用`+new Date()`，也可以达到相同的效果。
+
+Date类型继承了Object类型（Date.prototype.__proto__ === Object.prototype），但是Date重写了Object的toString、toLocalString和valueOf方法。这主要是为日期时间的显示而做的调整。
+
+Date类型可以支持的方法：toString，toDateString，toTimeString，toISOString，toUTCString，toGMTString，getDate，setDate，getDay，getFullYear，setFullYear，getHours，setHours，getMilliseconds，setMilliseconds，getMinutes，setMinutes，getMonth，setMonth，getSeconds，setSeconds，getTime，setTime，getTimezoneOffset，getUTCDate，setUTCDate，getUTCDay，getUTCFullYear，setUTCFullYear，getUTCHours，setUTCHours，getUTCMilliseconds，setUTCMilliseconds，getUTCMinutes，setUTCMinutes，getUTCMonth，setUTCMonth，getUTCSeconds，setUTCSeconds，valueOf，getYear，setYear，toJSON，toLocaleString，toLocaleDateString，toLocaleTimeString。
+
+tips：*如何获取Date对象支持哪些方法？答案：Object.getOwnPropertyNames(Date.prototype);*
+
+### RegExp类型
+JS使用RegExp类型来支持正则表达式。
+首先记一下正则表达式中的元字符：`( [ { \ ^ $ | ? * + . } ] )`。
+正则表达式中各个元字符的含义：
+
+|    元字符  | 含义 |
+| ------------|:-----|
+| ()      |   标记子表达式的开始和结束位置。子表达式可以获取供以后使用。|
+| []     | 中括号表达式，用于定义匹配的字符范围 |
+| {}     | 表示匹配的长度；a{3}表示匹配3个a，a{1,3}表示匹配1到3个a |
+| \      | 将下一个字符标记为或特殊字符、或原义字符、或向后引用、或八进制转义符。例如， 'n' 匹配字符 'n'。'\n' 匹配换行符。序列 '\\' 匹配 "\"，而 '\(' 则匹配 "("。 |
+| ^      | 匹配输入字符串的开始位置，除非在方括号表达式中使用，此时它表示不接受该字符集合。要匹配 ^ 字符本身，请使用 \^ |
+|  $     | 匹配输入字符串的结尾位置。如果设置了 RegExp 对象的 Multiline 属性，则 $ 也匹配 '\n' 或 '\r'。要匹配 $ 字符本身，请使用 \\\$。 |
+|  \|     |  指明两项之间的一个选择。要匹配 \|，请使用 \\\| |
+|  ?  |  匹配前面的子表达式零次或一次，或指明一个非贪婪限定符。要匹配 ? 字符，请使用 \\\? |
+|  *   |   匹配前面的子表达式零次或多次。要匹配 * 字符，请使用 \\\*   |
+|  +   |   匹配前面的子表达式一次或多次。要匹配 + 字符，请使用 \\\+   |
+|  .   |   匹配除换行符 \n 之外的任何单字符。要匹配 . ，请使用 \\\.  |
+
+这么写下去貌似没完了，看来还是要单开一篇写正则。
+
+
+**JS中的正则表达式写法**
+1. 字面量的形式
+`var expression = / pattern / flag ;`
+其中，pattern部分是任意复杂或简单到正则表达式；
+flag则用于标明正则表达式的行为。它有三个值：
+- g，pattern 被用于全局字符串，并不在匹配到第一个后就停止
+- i，忽略大小写，在匹配到时候不区分大小写
+- m，多行模式，在匹配到一行到末尾时，会继续匹配下一行
+
+1. RegExp构造函数模式
+`var reg = new RegExp('abc', 'gi');`
+这个表达式表示匹配‘ABC’，不区分大小写。
+
+### RegExp实例的属性
+每个RegExp实例都具有下列属性：
+- global：布尔值，是否设定了`g`标志；
+- ignoreCase: 布尔值，是否设定了`i`标志；
+- lastIndex： 整数，开始搜索下一个匹配项的字符位置，从0起算；
+- multiline： 布尔值，是否设定了`m`标志；
+- source： 正则表达式的字符串表示
