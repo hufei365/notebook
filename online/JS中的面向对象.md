@@ -245,6 +245,8 @@ __proto__ 是一个实例中指向构造函数原型对象prototype的指针,也
 
 person1.__proto__ === People.prototype;
 person2.__proto__ === People.prototype;
+上图
+![示意图(来源：JavaScript高级程序设计)](http://p9jftl6n6.bkt.clouddn.com/Prototype.png)
 
 ### 一些跟对象原型相关的方法
 - isPrototypeOf: 判断目标对象是否通过自己的原型对象生成
@@ -350,8 +352,7 @@ b2.skills.push('walk');
 console.log(b2.skills); // ["say", "walk"]
 console.log(b.skills); // ["say", "walk"] // 我们实际上并未修改b.skills的值，但是它确实发生了变化
 ```
-上图
-![原型链继承示意图(来源：JavaScript高级程序设计)](http://p9jftl6n6.bkt.clouddn.com/Prototype.png)
+
 #### 借用构造函数
 ```javascript
 function A(){
