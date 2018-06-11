@@ -593,6 +593,62 @@ console.log(iframe2.innerHTML); // iframe1
 ```
 代码示例中最终输出结果证明了只有一个实例被生成
 
+#### 模块模式
+还没弄懂这种模式的使用场景，留个坑先
+
+#### 代理模式
+保护机制： 过滤掉一些不合理的行为；
+虚拟代理：把一些开销很大 的操作延迟到真正需要的时候再进行；
+单一原则：对一个类而言，只做一件事；应用实例（图片预加载）
+缓存代理：对一些开销大且可能重复性的任务进行缓存处理，
+
+```javascript
+// 创建对象
+var targetObj = {
+    age: 1
+}
+// 定义值改变时的处理函数
+function observer(oldVal, newVal) {
+    // 其他处理逻辑...
+    console.info('name属性的值从 '+ oldVal +' 改变为 ' + newVal);
+}
+
+// 定义name属性及其set和get方法
+Object.defineProperty(targetObj, 'name', {
+    enumerable: true,
+    configurable: true,
+    get: function() {
+        return name;
+    },
+    set: function(val) {
+        //调用处理函数
+        observer(name, val)
+        name = val;
+    }
+});
+
+targetObj.name = 'Martin';
+targetObj.name = 'Lucas';
+console.info('targetObj:', targetObj)
+
+var o = {v:1, val:0};
+
+Object.defineProperty(o, 'val', {
+    configurable: true,
+    enumerable: true,
+    get: function(){
+        return val;
+    },
+    set: function(n){
+        observer(val, n);
+        val = n;
+    }
+});
+
+o.val = 1;
+o.val = 2;
+```
+
 【参考文章】
 [Javascript常用的设计模式详解](http://www.cnblogs.com/tugenhua0707/p/5198407.html)
 

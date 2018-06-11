@@ -175,10 +175,75 @@ flag则用于标明正则表达式的行为。它有三个值：
 `var reg = new RegExp('abc', 'gi');`
 这个表达式表示匹配‘ABC’，不区分大小写。
 
-### RegExp实例的属性
+**RegExp实例的属性**
 每个RegExp实例都具有下列属性：
 - global：布尔值，是否设定了`g`标志；
 - ignoreCase: 布尔值，是否设定了`i`标志；
 - lastIndex： 整数，开始搜索下一个匹配项的字符位置，从0起算；
 - multiline： 布尔值，是否设定了`m`标志；
 - source： 正则表达式的字符串表示
+
+**RegExp实例的方法**
+`var r = /a/gi, s = 'a1b1a2b2';`
+- exec()
+对exec而言，如果正则中有`g`标志，在执行r.exec(s)时，都会从上次结束的位置继续查找码，直到最后找不到的时候返回null。此时，如果继续执行exec，则会从字符的开始位置重新匹配。
+
+> PS：注意IE在lastIndex属性的实现上是有偏差的，具体版本号，还有待进一步测试。
+
+- test()
+用于测试输入的字符是否与正则表达式匹配；返回true 或 false；
+
+- 其它，正则表达式中的toString、toLocalString返回正则对字符串表达式；valueOf方法返回正则表达式本身。
+```javascript
+var r1 = /a/gi, r2 = new RegExp('a', 'g');
+r1.toString(); // "/a/gi";
+r2.toLocalString(); // "/a/g"
+r1.valueOf(); // /a/gi
+```
+**RegExp构造函数的属性**
+这些属性，在真正的OO（面向对象）语言中，一般都被看作静态属性。这些属性适用于作用域内的所有正则表达式，并且基于最后一次执行的正则表达式变化。
+这些属性都有两个名字（长属性名和短属性名）。
+- input：最后一次匹配的字符串；
+- lastMatch： 最后一次的匹配项；
+- lastParen： 最后一次匹配的捕获组；
+- leftContext： input字符串中lastMatch之前的字符串；
+- rightContext：input字符串中lastMatch之后对字符串；
+- multiline： 表示是否所有的表达式都使用多行模式；
+
+除了上述几个属性，还有9个我们平时最常用的用于存储捕获组的属性。它们通常使用RexExp.$1、RegExp.$2···RegExp.$9表示。
+
+RegExp的结语：RegExp并未完全正则表达式的所有特性，特别式一些高级特性。在这方面，Perl语言做的相对比较完美。
+
+### Function类型
+与其它语言不同的是，在JS中，函数也是对象。
+
+函数重载的概念：同一作用域下，函数名相同而参数不同（个数不同或类型不同）的函数。这主要用于处理那些函数体大致相同，但是参数不同，处理过程不同的情景。
+
+函数声明和函数表达式的区别：在什么时候可以通过变量访问函数，这是两者的区别。除此以外，没有其它区别。
+```javascript
+f1(); // I am f1
+function(){console.log('I am f1')}
+
+f2(); //  Uncaught TypeError: f2 is not a function
+var f2 = function(){console.log('I am f2')};
+```
+
+？？？callee 和 caller 的关系？
+```javascript
+f1(); // null
+function f1(){
+    console.log(arguments.callee.caller);
+};
+
+// f2();
+var f2 = function(){
+    console.log(arguments.callee.caller);
+    f1(); 
+};
+
+f2(); // 下面是f2的输出：
+// null
+// 输出f2的函数体： ƒ (){ console.log(arguments.callee.caller); f1(); }
+```
+
+
