@@ -450,6 +450,153 @@ fn |  该事件被触发时执行的函数。 false值也可以做一个函数�
 
 // TODO 前端性能优化
 // TODO JS的设计模式
+*什么是设计模式？*
+> 设计模式是解决实际问题的一种固定思路，这些思路通常是从实际经验中总结而来。大部分问题的解决之道是有相同模式的，这些模式总结出来就是我们通常所讲的设计模式。
+
+#### 工厂模式
+JS中创建对象的一种模式，可以理解为批量生产具有类似属性和行为的对象。
+```javascript
+// again factory pattern
+function factory(name){
+    var o = new Object();
+    o.name = name;
+    o.type = 'factory';
+    o.can = function(){
+        console.log('My name is ' + this.name);
+    }
+}
+var o1 = factory('o1');
+var o2 = factory('o2');
+
+o1.can(); // My name is o1
+o2.can(); // My name is o2
+```
+工厂模式具有问题就是不知道对象是那个工厂函数创建的。
+
+看一下下面的代码，复杂的工厂模式
+```javascript
+function Factory(){
+    this.name = 'factory';
+    this.can = function(){
+        console.log('I can produce the product');
+    }
+}
+Factory.prototype.produce = function(){
+    // 下面实现子类中重复性的业务
+    console.log('I start work at 8 clock');
+    // throw new Error('fn: produce has to be define by Sub');
+}
+
+function extend(Sub, Sup){
+    Sub.prototype = new Sup();
+    Sub.prototype.constructor = Sub;
+    Sub.prototype.sup = Sup.prototype;
+}
+
+// another extend func (just inherit the Sup's prototype)
+function extend2(Sub, Sup){
+    var F = function(){};
+    F.prototype = Sup.prototype;
+
+    Sub.prototype = new F(); // ?? 为什么要借助一个中间函数F
+    Sub.prototype.constructor = Sub;
+    Sub.sup = Sup.prototype;
+}
+
+function CarFactory(){
+    this.type = 'car';
+    Factory.call(this);
+}
+CarFactory.prototype.produce=function(){
+    PhoneFactory.sup.produce.call(this);
+    console.log('I produce the car');
+}
+
+
+function PhoneFactory(){
+    this.type = 'phone';
+    Factory.call(this);
+}
+
+extend2(PhoneFactory, Factory);
+PhoneFactory.prototype.produce=function(){
+    PhoneFactory.sup.produce.call(this);
+    console.log('I produce the phone');
+}
+var phone = new PhoneFactory();
+var sub = new CarFactory();
+```
+
+#### 单体模式
+单体模式的特点使实例只会被实例化一次。虽然，对象字面量也可以看做是实现单体模式的一种方式，但它不能实例化。
+```javascript
+function SinglePattern(name){
+    if(SinglePattern.instance){
+        return SinglePattern.instance;
+    }
+    this.name = name;
+    this.say = function(){
+        console.log(this.name);
+    }
+    SinglePattern.instance = this;
+}
+
+var a = new SinglePattern('aaaaa');
+var b = new SinglePattern('bbbbb');
+
+a.say(); // aaaaa
+b.say(); // aaaaa
+a === b; // true  因为单体模式下，只能被实例化一次，当第二次new的时候，返回的是第一次生成的实例
+
+```
+？？？那么问题来了，页面弹窗是否可以考虑使用单体模式？
+
+单体模式的高级写法：
+```javascript
+var getSingleInstance = function(fn){
+    var o = null;
+
+    return function(){
+        return o || (o = fn.apply(this, arguments));
+    }
+}
+
+// 创建一个弹窗实例的方法
+function createDlg(html){
+    console.log(arguments);
+    var div = document.createElement('div');
+    div.innerHTML = html;
+    div.style.display = 'none';
+    return div;
+}
+// 创建iframe实例的方法
+function createIframe(html){    
+    var iframe = document.createElement('iframe');
+    iframe.innerHTML = html;
+    iframe.style.display = 'none';
+    return iframe;
+}
+
+var createSingeDlg = getSingleInstance(createDlg);
+var createSingeIframe = getSingleInstance(createIframe);
+
+var dlg1 = createSingeDlg( 'dlg1');
+var dlg2 = createSingeDlg( 'dlg2');
+var iframe1 = createSingeIframe('iframe1');
+var iframe2 = createSingeIframe('iframe2');
+
+console.log(dlg1.innerHTML); // dlg1
+console.log(dlg2.innerHTML); // dlg1
+console.log(iframe1.innerHTML); // iframe1
+console.log(iframe2.innerHTML); // iframe1
+
+```
+代码示例中最终输出结果证明了只有一个实例被生成
+
+【参考文章】
+[Javascript常用的设计模式详解](http://www.cnblogs.com/tugenhua0707/p/5198407.html)
+
+
 // TODO 水平垂直布局
 // TODO 盒模型内部机理
 // TODO BFC（块级上下文）及其内部机制
