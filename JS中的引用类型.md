@@ -246,4 +246,60 @@ f2(); // 下面是f2的输出：
 // 输出f2的函数体： ƒ (){ console.log(arguments.callee.caller); f1(); }
 ```
 
+**函数的属性和方法**
+每个函数都包含两个非继承而来的方法：call() 和 apply()。
+它们两个的作用都是在特定的作用域中调用函数，实际上就是设置函数体内的this指向。
+
+另外，ES5中还实现了另一个方法： bind()。它的作用跟call()和apply()一样。
+
+### 基本包装类型
+Number、Boolean、String
+```javascript
+// hex 转 rgb
+// #fff ==>  rgb(255,255,255)
+function hex2rgb(s){
+    var r = [];
+    var nums = /^#([a-f\d]+)$/.exec(s)[1];
+
+    if(nums){
+        nums = nums.split('');
+        if(nums.length === 3){
+
+            nums.forEach(function(v, i){
+                r[i] = parseInt('0x'+v+v);
+            });
+        } else if(nums.length === 6){
+            nums.forEach(function(v, i){
+                if(!(i%2)){
+                    r.push(parseInt('0x' + v + nums[i+1]));
+                } 
+            })
+        }
+    }
+
+    return ('rgb('+r.join(',')+')');
+}
+
+// rgb 转 hex
+// rgb(255, 255, 255) ==> #ffffff
+function rgb2hex(s){
+    var r = [];
+
+    var nums = /^rgb\(([\d]{1,3},[\d]{1,3},[\d]{1,3})\)$/.exec(s);
+    nums = nums ? nums[1] : null;
+    if(nums){
+        nums = nums.split(',');
+        nums.forEach(function(v, i){
+            r.push( Number(v).toString(16).padStart(2, '0'));
+        });
+
+
+    }
+    return ('#' + r.join(''));
+}
+
+
+console.log(hex2rgb('#ff0eff'));
+console.log(rgb2hex('rgb(255,254,255)'))
+```
 
