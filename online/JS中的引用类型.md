@@ -254,6 +254,38 @@ f2(); // 下面是f2的输出：
 
 ### 基本包装类型
 Number、Boolean、String
+
+以上三种基本类型都是可以使用如下方式声明
+```javascript
+var n = 1;
+var b = true;
+var s = 'abced';
+typeof n; // number
+typeof b; // boolean
+typeof s; // string
+```
+看完以上代码，应该都没有任何问题。
+那么我的问题是， 以字符变量 `s` 为例。如果typeof s === 'string'， 那么s是否会有String.prototype上的方法。
+
+答案当然是：有。
+```javascript
+var s = 'abcde';
+s.substring(2,4); // 'cde'
+```
+之所以会有，这要看JS引擎底层实现逻辑了。
+
+其实，为了让我们实现这种直观的操作，后台已经自动完成了一系列的处理。当第二行代码访问 s 时，访问过程处于一种读取模式，也就是要
+从内存中读取这个字符串的值。而在读取模式中访问字符串时，后台都会自动完成下列处理。
+1. 创建 String 类型的一个实例；
+2. 在实例上调用指定的方法；
+3. 销毁这个实例。
+可以将以上三个步骤想象成是执行了下列 ECMAScript 代码。
+```javascript
+var s = new String("some text");
+s.substring(2,4);
+s = null; 
+```
+
 ```javascript
 // hex 转 rgb
 // #fff ==>  rgb(255,255,255)
@@ -302,4 +334,57 @@ function rgb2hex(s){
 console.log(hex2rgb('#ff0eff'));
 console.log(rgb2hex('rgb(255,254,255)'))
 ```
+
+String 对象的一些常用方法：`charAt()`、`chatCodeAt()`、`concat()`、`slice()`、`substring()`、`substr()`、`match()`
+```javascript
+var s = 'hello world!';
+
+s.charAt(1); // 'e'
+s.charCodeAt(1); // 101 返回字符编码
+s.concat('\n Anther line.', '\n End!!'); // concat 连接方法， 与‘+’操作符功能一样
+//"hello world!
+// Anther line. 
+// End!!"
+
+s.slice(6,7); // 'w'
+s.substring(6,7); // "w"
+s.substr(6,7); // "world!"
+// 上面三个字符串的截取方法在没有第二个参数的情况下，默认结束位置都是是字符串末尾
+
+// 字符串**匹配方法**
+s.match(/world(\!)/); // ["world!", "!", index: 6, input: "hello world!", groups: undefined]
+// 与RegExp的exec方法 返回结果相似
+/world(!)/.exec(s); // ["world!", "!", index: 6, input: "hello world!", groups: undefined]
+
+```
+
+**replace()** 该方法可以接受正则作为参数，使用正则的时的高级用法，看下表：
+| 字符名 | 描述 |
+|:-----:|:-----|
+| $$ | $ |
+| $& | 匹配整个模式的子字符串。与RegExp.lastMatch的值相同 |
+| $` | 匹配的子字符串之前的子字符串。与RegExp.leftContext的值相同 |
+| $' | 匹配的子字符串之后的子字符串。与RegExp.rightContext的值相同 |
+| $n | 匹配第n个捕获组的子字符串，其中n等于0～9。例如，$1是匹配第一个捕获组的子字符串，$2是匹配第二个捕获组的子字符串，以此类推。如果正则表达式中没有定义捕获组，则使用空字符串 |
+| $nn |匹配第nn个捕获组的子字符串，其中nn等于01～99。例如，$01是匹配第一个捕获组的子字符串，$02是匹配第二个捕获组的子字符串，以此类推。如果正则表达式中没有定义捕获组，则使用空字符串 |
+
+```javascript
+var s = 'hello world! 58 360 Tencent!';
+s.replace(/58/, '$`'); // "hello world! hello world!  360 Tencent!"
+s.replace(/58/, '$\''); //"hello world!  360 Tencent! 360 Tencent!" 
+// 关于 "$`" 与 "$'"的含义说明，在《JavaScript高级程序设计（第3版）》中说明写反了，在实际测试和参考其它资料均与之不符。
+
+var text = "cat, bat, sat, fat";
+result = text.replace(/(.at)/g, "word ($1)");
+alert(result); //word (cat), word (bat), word (sat), word (fat) 
+```
+**split()** 该方法也可以接受正则表达式作为参数。
+
+*PS: 注意 若需要替换字符串中全部子字符串，只可以使用正则*
+
+### 单体内置对象
+有**Global**和**Math**对象，虽然JS没有提供直接访问**Global**对象的方式，但是在Web浏览器中，大都通过**Window**实现了**Global**的属性。
+**Math**主要提供了一些数学相关的方法。
+
+
 
