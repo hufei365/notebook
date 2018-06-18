@@ -5,10 +5,8 @@
 
 // TODO jQuery 的选择器引擎：Sizzle 
 
-// TODO 初探浏览器内核
-
-// TODO this劫持
-
 // CSS中的 FlexBox 和 Grid
 
 // jekyll 在Mac OS中的安装和使用
+
+// window.onload 与 dom.onready的区别
