@@ -9,4 +9,5 @@
 
 // jekyll 在Mac OS中的安装和使用
 
-// window.onload 与 dom.onready的区别
+
+// 事件节流 和 事件防抖
