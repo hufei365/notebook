@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>CSS3 HSL</title>
+    <style>
+
+        #box {
+            height: 150px;
+            text-align: center;
+            padding: 50px;
+            margin: 30px;
+            border: 5px dashed #555;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div id="box">
+    <h1>试着拖动下面的滑动条，观察颜色变化</h1>
+    </div>
+
+
+    <div>
+        <label for="">色调：</label>
+        <div class="slide-track">
+            <div class="slide" style="left:0px;" type="hue"></div>
+        </div>
+    </div>
+
+    <div>
+        <label for="">饱和度：</label>
+        <div class="slide-track">
+            <div class="slide" style="left:0px;" type="saturation"></div>
+        </div>
+    </div>
+    <div>
+        <label for="">亮度：</label>
+        <div class="slide-track">
+            <div class="slide" style="left:0px;" type="lightness"></div>
+        </div>
+    </div>
+    <style>
+        .slide-track {
+            padding: 0;
+            position: relative;
+            margin: 20px;
+            border: none;
+            width: 300px;
+            height: 10px;
+            border-radius: 5px;
+            background: hsl(0, 0%, 40%);
+        }
+
+        .slide {
+            padding: 0;
+            position: absolute;
+            top: -20px;
+            left: 0;
+            border: none;
+            width: 10px;
+            height: 50px;
+            border-radius: 10px;
+            background: hsl(0, 0%, 20%);
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        var curHSL = {
+            h: 0,
+            s: 100,
+            l: 50
+        };
+        var max = {
+            h: 360,
+            s: 100,
+            l: 100
+        };
+
+        var disX, disY, curSlide = null; // 拖动事件相关变量
+
+        var box = document.getElementById('box');
+
+        init();
+
+        function init(){
+            box.setAttribute('style', `background: hsl(${curHSL.h}, ${curHSL.s}%, ${curHSL.l}%);`);
+            var slides = document.getElementsByClassName('slide');
+            var len = slides.length;
+
+            for (var i = 0; i < len; i++) {
+                var slide = slides[i];
+                var type = slide.getAttribute('type').charAt(0);
+                slide.setAttribute('style', `left: ${300*curHSL[type]/max[type]}px;`);
+                bindSlide(slide); 
+            }
+        }
+
+        function bindSlide(slide) {
+            slide.addEventListener('mousedown', function (e) {
+                disX = e.clientX - this.offsetLeft;
+                disY = e.clientY - this.offsetTop;
+                slide.setAttribute('draggable', true);
+                curSlide = slide;
+            });
+        }
+
+        document.addEventListener('mouseup', function (e) {
+            curSlide && curSlide.setAttribute('draggable', false);
+        });
+
+        document.addEventListener('mousemove', function (e) {
+            e.preventDefault();
+            if (curSlide && curSlide.getAttribute('draggable') === 'true') {
+                debounce(move)(e);
+            }
+        });
+
+        // 滑块拖动事件处理
+        function move(e) {
+            var MAX = 300, MIN = 0;
+            var offsetX = e.clientX - disX;
+            curSlide.setAttribute('style', `left: ${offsetX > MAX ? MAX : offsetX > MIN ? offsetX : MIN}px;`);
+
+            calc(curSlide.getAttribute('type').charAt(0), offsetX / MAX);
+        }
+
+        // 根据滑块的位置，计算对应的HSL值
+        function calc(type, per) {
+            curHSL[type] = max[type] * per;
+            box.setAttribute('style', `background: hsl(${curHSL.h}, ${curHSL.s}%, ${curHSL.l}%);`);
+        }
+
+        // 节流函数
+        function debounce(fn) {
+            var timer = null;
+
+            return function (e) {
+                clearTimeout(timer);
+                var context = this;
+                var params = arguments;
+                timer = setTimeout(function () {
+                    fn.apply(context, params);
+                }, 10);
+            }
+        }
+    </script>
+</body>
+
+</html>
