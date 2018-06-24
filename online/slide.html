@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>轮播图</title>
+</head>
+
+<body>
+    <style>
+        div {
+            width: 600px;
+            overflow: hidden;
+        }
+
+        ul {
+            position: relative;
+            list-style: none;
+            width: 3000px;
+            height: 162px;
+            float: left;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        li {
+            float: left;
+        }
+
+        li img {
+            width: 600px;
+        }
+    </style>
+    <h2>原生JS写轮播图</h2>
+    <h3>轮播图就好比翻页，不过加了自动翻页功能</h3>
+    <div id="box">
+        <ul style="left: 0px;">
+            <li>
+                <img src="images/01.jpg" alt="">
+            </li>
+            <li>
+                <img src="images/02.jpg" alt="">
+            </li>
+            <li>
+                <img src="images/03.jpg" alt="">
+            </li>
+            <li>
+                <img src="images/04.jpg" alt="">
+            </li>
+            <li>
+                <img src="images/05.jpg" alt="">
+            </li>
+        </ul>
+
+        <!-- 控制按钮，还没完成的feature………… -->
+        <div>
+            <a href="javascript:void(0);" class="control" type="-1">Prev</a>
+            <a href="javascript:void(0);" class="control" type="+1">Next</a>
+        </div>
+    </div>
+
+    <script>
+
+        var box = document.getElementById('box');
+        var ul = document.getElementsByTagName('ul')[0];
+
+        var time = 500;
+        var width = 600;
+        var delay = 10;
+        var speed = width / time;
+
+        var cur = 0;
+        const STAY_TIME = 1500;
+        var interval = null;
+        var prev = 0;
+
+        var rLeft = /^-?([\d\.]+)px/;
+
+        // 每个图片当周期，包含了滚动时间，当图片滚动到当前位置时，会停留一段时间，然后再继续滚动，显示显示下一张图片
+        var t = setInterval(function () {
+            if(+new Date() - prev < STAY_TIME){
+                //scroll();
+            } else {
+                clearInterval(interval);
+                prev = +new Date();
+
+                if(cur > 4){
+                    reset();
+                    cur = 0;
+                } else {
+                    cur++;
+                }
+                scroll();
+            }
+        },  STAY_TIME);
+
+        // 滚动动画
+        function scroll(distance, direction, time) {
+
+            distance = distance || 600; // 默认滚动一张图片的距离
+            direction = direction !== undefined ? direction : -1; // 默认方向
+            time = time || 2000; // 默认动画时间 2s
+
+           
+                interval = setInterval(function () {
+
+                    var dis = speed * delay;
+                    var curLeft = parseFloat(ul.style.left.match(rLeft)[1]);
+                    if (curLeft + dis > 2400) {
+                        curLeft = 2400 - dis;
+                    }
+                    var left = parseFloat((curLeft + dis).toFixed(1));
+                    ul.setAttribute('style', `left: ${-left}px`);
+
+                    if (!(left % width)) {
+                        clearInterval(interval);
+                    }
+                }, delay);
+        }
+
+        // 重置动画，再回滚到初始位置
+        function reset() {
+            var _interval = null;
+            var dis = parseFloat(ul.style.left.match(rLeft)[1]) / 2000 * delay;
+            _interval = setInterval(function () {
+                var curLeft = parseFloat(ul.style.left.match(rLeft)[1]);
+                if (curLeft == 0) {
+                    clearInterval(_interval);
+                    prev = +new Date();
+                } else {
+                    ul.setAttribute('style', `left: ${-((curLeft - dis).toFixed(1))}px`);
+                }
+
+            }, delay);
+        }
+
+        /**
+         * 计算中难免会有误差（小数、精确度之类），当移动距离已经无限接近目标时，将移动距离取为目标距离即可
+        */
+        var abs = Math.abs;
+        function toInteger(goal, add, cur){
+            
+            if(abs(cur) > abs(goal) - abs(add) || abs(cur) < abs(goal) + abs(add)){
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+    </script>
+</body>
+
+</html>
