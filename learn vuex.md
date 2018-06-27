@@ -210,5 +210,10 @@ const moduleA = {
     }
 }
 ```
+关于访问module内的state,getter,mutation和action的方式
+- store直接访问？？
+- `mapState`,`mapGetter`,`mapMutation`, `mapAction`
 
-??? module内的state,getter,mutation和action的访问方式
+mapXXX的方式根据是否指定根路径又分为两种
+1. `mapState('moduleA', ['moduleAState']`
+2. `mapState({moduleAState: 'moduleA/moduleAState'}`

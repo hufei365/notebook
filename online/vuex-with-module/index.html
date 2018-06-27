@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Vuex With Module</title>
+    <script src="vue.js"></script>
+    <script src="vuex.js"></script>
+    <script src="store.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+</head>
+
+<body>
+
+    <div id="app">
+        <p>
+            length：{{length}}
+            <br> and the nums output: {{nums}}</p>
+        <button @click=push>push</button>
+
+        <p>
+            the child name: {{childName}}
+            <br> the binSon name: {{bigSonName}}
+            <br> the son name: {{sonName}}
+        </p>
+
+        <label for="">for get getters</label>
+        <p>
+            bigSon's getter['getterUpBigSon']: {{getterUpBigSon}}
+            <br>
+            bigSon.son's getter['getterUpSon']: {{getterUpSon}}
+
+        </p>
+        <button @click="childChange">change child Name</button>
+        <button @click="sonChange">change son Name</button>
+        <div>
+                <button @click="sonA">change sonA</button>
+                <button @click="sonB">change sonB</button>
+        </div>
+
+        <div>
+            <button @click="actionBigSon">actionBigSon</button>
+        </div>
+    </div>
+
+    <script>
+
+        const app = new Vue({
+            el: '#app',
+            store,
+            // state
+            computed: {
+                ...Vuex.mapState({
+                    length: state => state.nums.length,
+                    nums: state => state.nums,
+                    childName: (state) => {
+                        return state.child.childName;
+                    },
+                    bigSonName: state => state.bigSon.bigSonName,
+                    sonName: (state) => {
+                        return state.bigSon.son.sonName;
+                    }
+                }),
+
+                ...Vuex.mapGetters('bigSon',{
+                    getterUpBigSon:'getterUpBigSon'
+                }),
+                ...Vuex.mapGetters('bigSon/son',['getterUpSon']),
+                
+            },
+            methods: {
+                ...Vuex.mapMutations({
+                    push:'push', 
+                    childChange: 'child/childChange',
+                    sonChange: 'bigSon/son/sonChange'
+                })
+                ,...Vuex.mapMutations('bigSon/son',['sonA', 'sonB'])
+
+                ,...Vuex.mapActions({
+                    actionBigSon: 'bigSon/bigSonAction'
+                })
+            }
+        })
+
+    </script>
+</body>
+
+</html>
