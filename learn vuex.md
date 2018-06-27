@@ -197,4 +197,18 @@ Modules的出现，主要是为了解决单个store管理大量数据状态时�
 在这种情况下，我们可以将整个store切割成若干小的module，每个小module都有自己的`state`、`getter`、`mutation`和`action`。
 最后再在总的store里面，通过modules选项，将这些小的module聚合起来。这样就可以在Vue的组件中，使用所有module的state、getter等。
 
+##### 模块的局部状态
+模块内的mutation和getter，接收的第一个参数时 **模块的局部状态对象**，第三个参数才是根store(rootState)
+``` javascript
+const moduleA = {
+    // ...
+    getters:{
+        getterA: (context, getters, rootState)=>{
+            // 这里的context 指 moduleA 本身，不是指代他的父级store
+            // rootState 才是父级store的state
+        }
+    }
+}
+```
 
+??? module内的state,getter,mutation和action的访问方式
