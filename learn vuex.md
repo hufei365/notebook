@@ -112,6 +112,9 @@ const store = new Vuex.Store({
     },
     mutations: {
         push:state=>{
+            if(state.nums.length > 2){
+                Vue.set(state, 'newProp', 123); // 动态添加属性
+            }
             state.nums.push(state.nums.length + 1);
         }
     }
@@ -149,4 +152,68 @@ store.commit('push', 5);
 console.log(store.state.nums);// [1,2,3,4,5,6,11]
 ```
 
+> PS：Mutation中的操作必须是 **同步操作**。
 
+那mutation中可不可以有异步操作呢，当然也可以，程序并不会报错。但如果你真的这么做了，你会发现这个操作可能会有点儿作。程序是否会发生不可预知的问题，这个不好确定；但是对于devtool，你会发现mutation中记录的信息已经不是你所预期的结果了。mutation会在执行前，对store进行一次快照。而如果有异步操作的话，它可能会对下一次的mutation快照造成影响。
+
+##### Mutation 需遵守 Vue 的响应规则
+既然 Vuex 的 store 中的状态是响应式的，那么当我们变更状态时，监视状态的 Vue 组件也会自动更新。这也意味着 Vuex 中的 mutation 也需要与使用 Vue 一样遵守一些注意事项：
+
+1. 最好提前在你的 store 中初始化好所有所需属性;
+2. 当需要在对象上添加新属性时，你应该:
+    1. 使用 `Vue.set(obj, 'newProp', 123)`,
+    2. 以新对象替换老对象。例如，利用对象展开运算符我们可以这样写：`state.obj = {...state.obj, 'newProp':1}`
+
+#### Action
+Vuex中存在Action的目的：
+1. 比较复杂情况下的mutation提交
+2. 异步操作下的mutation提交
+
+
+
+store.dispatch返回的结果是个Promise，这意味着我们有如下写法。
+
+```javascript
+store.dispatch('actionA').then(()=>{
+    return new Promise((resolve, reject)=>{
+        store.dispatch('actionB').then(()=>{
+            resolve();
+        });
+    })
+}).then(()=>{
+    return new Promise((resolve, reject)=>{
+        store.dispatch('actionC').then(()=>{
+            resolve();
+        });
+    })
+});
+```
+
+上面的代码会每隔一秒执行一个action。
+
+#### Modules
+Modules的出现，主要是为了解决单个store管理大量数据状态时，体量较大，不利于维护的问题。
+
+在这种情况下，我们可以将整个store切割成若干小的module，每个小module都有自己的`state`、`getter`、`mutation`和`action`。
+最后再在总的store里面，通过modules选项，将这些小的module聚合起来。这样就可以在Vue的组件中，使用所有module的state、getter等。
+
+##### 模块的局部状态
+模块内的mutation和getter，接收的第一个参数时 **模块的局部状态对象**，第三个参数才是根store(rootState)
+``` javascript
+const moduleA = {
+    // ...
+    getters:{
+        getterA: (context, getters, rootState)=>{
+            // 这里的context 指 moduleA 本身，不是指代他的父级store
+            // rootState 才是父级store的state
+        }
+    }
+}
+```
+关于访问module内的state,getter,mutation和action的方式
+- store直接访问？？
+- `mapState`,`mapGetter`,`mapMutation`, `mapAction`
+
+mapXXX的方式根据是否指定根路径又分为两种
+1. `mapState('moduleA', ['moduleAState']`
+2. `mapState({moduleAState: 'moduleA/moduleAState'}`

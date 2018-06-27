@@ -12,3 +12,5 @@
 // Single source of truth
 
 // ECMAScript提案得几个阶段都是啥
+
+// Promise
