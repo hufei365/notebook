@@ -10,7 +10,3 @@
 // Flutter
 
 // Single source of truth
-
-// ECMAScript提案得几个阶段都是啥
-
-// JS中的位运算
