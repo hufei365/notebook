@@ -7,8 +7,6 @@
 
 // TODO: CSS中的 FlexBox 和 Grid
 
-// TODO: linear-gradient(线性渐变)
-
 // TODO: Flutter 的概念
 
-// TODO: Reflect类型
+// DOM2 and DOM3
