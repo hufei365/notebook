@@ -1,7 +1,7 @@
 # notebook
 
 
-// TODO: FIS3打包慢的问题
+// TODO: FIS3的打包机制
 
 // TODO: jQuery 的选择器引擎：Sizzle 
 
@@ -9,4 +9,7 @@
 
 // TODO: Flutter 的概念
 
-// DOM2 and DOM3
+// TODO: DOM2 and DOM3
+
+// TODO: CROS 跨域资源共享
+
