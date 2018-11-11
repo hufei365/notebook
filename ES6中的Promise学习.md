@@ -161,5 +161,39 @@ func(); // 输出错误信息
 有一点需要明确，async/await看上去比Promise好很多，但是它只是一种语法糖。它的实现基础依然是基于Promise。
 
 ### 市面上其它相关解决方案
-- async/await
+- async/await: 本质上可以看作Promise 的语法糖，以同步的方式写异步代码，可以应用try catch 语句捕获异常；需要注意的是如果使用不当，会造成代码阻塞。
 - jQuery中的`Deferred`
+
+### 补充内容，自己实现一个简单的Promise
+
+``` javascript
+var p = new Promise((resolve, reject)=>{
+    window.setTimeout(function(){
+        resolve(1);
+    }, 1000);
+});
+
+p.then((data)=>{console.log(data);})
+function MyPromise(fn){
+    var self = this;
+    var callbacks = [];
+    this.then=function(fn){
+        callbacks.push(fn);
+    }
+    function resolve(data){
+        callbacks.map((f)=>{
+            f.call(self, data);
+        });
+    }
+    fn(resolve, reject)
+}
+
+var mp = new MyPromise(function(resolve, reject){
+    window.setTimeout(function(){
+        resolve(2);
+    }, 1000);
+});
+mp.then((data)=>{
+    console.log(data);
+});
+```
