@@ -64,3 +64,5 @@ TODO: Node.js与 RSS
 
 // TODO: 前端工程化 (https://github.com/fouber/blog/issues/3)
 
+// TODO: 断言函数assert
+
