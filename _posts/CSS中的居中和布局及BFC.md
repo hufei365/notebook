@@ -1,9 +1,8 @@
----
-layout: post
+/**
 title: CSS中的居中和布局及BFC
 date: 2018-06-15
 tags: CSS,布局,BFC,居中
----
+*/
 
 
 ### CSS 水平居中

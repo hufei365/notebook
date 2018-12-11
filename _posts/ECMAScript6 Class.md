@@ -1,10 +1,8 @@
----
-layout: post
-title: ECMAScript6 Class
+/**
+title: ECMAScript6 之 Class
 date: 2018-04-30
 tags: JavaScript,ES6,Class,面向对象
-categories: JavaScript
----
+*/
 
 ### 定义类
 **经典式定义**

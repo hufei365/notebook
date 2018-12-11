@@ -1,10 +1,8 @@
----
-layout: post
+/**
 title: 作用域与闭包
 date: 2018-04-30
 tags: JavaScript,作用域,闭包
-categories: JavaScript
----
+*/
 
 作用域与闭包
 *什么是作用域？*

@@ -1,10 +1,8 @@
----
-layout: post
+/**
 title: JS中的引用类型
 date: 2018-04-30
 tags: JavaScript,引用类型
-categories: JavaScript
----
+*/
 
 ## JS中的引用类型
 

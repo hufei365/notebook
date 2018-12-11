@@ -1,9 +1,8 @@
----
-layout: post
+/**
 title: 在CentOS7 上安装jekyll及简单使用
 date: 2018-06-15
-tags: Jekyll
----
+tags: Jekyll,静态博客
+*/
 
 
 ### 在CentOS7 上安装jekyll及简单使用

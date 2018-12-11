@@ -1,10 +1,8 @@
----
-layout: post
+/**
 title: JS中的面向对象程序设计
 date: 2018-04-30
 tags: JavaScript,面向对象
-categories: JavaScript
----
+*/
 
 ## 面向对象程序设计
 

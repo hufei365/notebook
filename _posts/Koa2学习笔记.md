@@ -1,10 +1,8 @@
----
-layout: post
+/**
 title: Koa2学习笔记
 date: 2016-05-30
-categories: JavaScript
 tags: Koa2,Node.js
----
+*/
 
 如果不想看这些概念性的东西，可以直接跳到下一篇：[Koa2简单上手](/);
 先来看看来自官网的一句话介绍自己 :smile: (=^ ^=)。
@@ -15,10 +13,10 @@ tags: Koa2,Node.js
 之所以抄录是因为官方对自己定位和认知很明确呐~<!--more-->
 我们挑出几个关键词，来展开本文的内容。
 1. [Web应用](#webapp)
-1. [Web框架](#webframework)
-1. [Express](#express)
-1. [generator](#generator)
-1. [中间件](#middleware)
+2. [Web框架](#webframework)
+3. [Express](#express)
+4. [generator](#generator)
+5. [中间件](#middleware)
 
 如果不太明白官网介绍的是什么意思，可以这么理解。koa说我这儿已经把框架都搭建好了，你自己需要啥，可以很方便快捷的添加进去，不会有限制，也不会有性能损失。 一句话：Koa本身做的工作仅仅是定制了中间件的编写规范，而不内置任何中间件。话说这一直是我们设计框架追求的极致思想呐。不过换到具体业务场景中，我们可以根据实际需要，适当的放宽或限制出入口。这样对生产效率反而有更大帮助。
 

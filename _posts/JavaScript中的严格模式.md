@@ -1,10 +1,8 @@
----
-layout: post
-title: Javascript中的严格模式
+/**
+title: JavaScript中的严格模式
 date: 2018-04-30
 tags: JavaScript,严格模式
-categories: JavaScript
----
+*/
 
 JavaScript 严格模式（strict mode）即在严格的条件下执行js程序的模式。这是在ES5中引进来的。
 严格模式通过在**脚本**或**函数**的头部添加 `"use strict";` 表达式来声明。
