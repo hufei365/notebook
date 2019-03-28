@@ -66,3 +66,17 @@ TODO: Node.js与 RSS
 
 // TODO: 断言函数assert
 
+
+``` javascript
+// https://babbage.cs.qc.cuny.edu/ieee-754.old/decimal.html
+Number.MAX_SAFE_INTEGER;
+Number.MAX_SAFE_INTEGER + 0.1;
+Number.MAX_SAFE_INTEGER + 1;
+Number.MAX_SAFE_INTEGER + 2;
+Number.MAX_SAFE_INTEGER + 3;
+(2 - 2 ** -52) * 2 ** 1023;
+(2 - 2 ** -52) * 2 ** 1023 == Number.MAX_VALUE;
+2 ** 53 - 1;
+1.7976931348623157e+308 + 1.7976931348623157e+308;
+Number.MAX_VALUE;
+```
