@@ -8,7 +8,7 @@
 ## 2019 readings
 - [x] CSS世界
 - [ ] CSS揭秘
-- [ ] 图解HTTP
+- [x] 图解HTTP
 - [ ] 今日简史
 
 ## 2018 readings
