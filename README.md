@@ -1,4 +1,7 @@
 ## About me
+![logo](./assets/avatar.png)
+> 胡斐，一个生于90年代但是总认为自己是80后，~~但是思想又很像00后的青年~~。
+ 
 1. A JSer
 2. To be a reader
 3. To be a thinker
@@ -10,6 +13,7 @@
 - [ ] CSS揭秘
 - [x] 图解HTTP
 - [ ] 今日简史
+- [ ] Vue.js项目实战
 
 ## 2018 readings
 - [x] JavaScript忍者秘籍
