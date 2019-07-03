@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>clip image</title>
+    <title>canvas</title>
     <style>
         html,
         body {
@@ -18,7 +18,7 @@
 <body>
 
     <style>
-        body > div {
+        body>div {
             position: relative;
             float: left;
         }
@@ -42,7 +42,7 @@
     </div>
     <div>
         <button id="copy"> copy clip</button>
-        <img src="" id="result" >
+        <img src="" id="result">
     </div>
 
     <script>
@@ -69,17 +69,74 @@
         };
 
         function mousedown(event) {
-            fillAll();
+            let cursor = c.style.cursor;
+            let {
+                x,
+                y
+            } = event, {
+                x1,
+                y1,
+                x2,
+                y2
+            } = pos;
+            console.log(cursor);
+            switch (cursor) {
+                case 'nesw-resize':
+                    if (getTheClose(x, x1, x2) && getTheClose(y, y2, y1)) {
+                        x1 = x2;
+                    } else {
+                        y1 = y2;
+                    }
+                    break;
+                case 'nwse-resize':
+                    if (getTheClose(x, x1, x2) && getTheClose(y, y1, y2)) {
+                        x1 = x2;
+                        y1 = y2;
+                    }
+                    break;
+                case 'row-size':
+                    if (getTheClose(y, y1, y2)) {
+                        y1 = y2;
+                    }
+                    break;
+                case 'col-size':
+                    if (getTheClose(x, x1, x2)) {
+                        x1 = x2;
+                    }
+                    break;
+                default:
+                    console.log('default'+new Date);
+                    x1 = x2 = x;
+                    y1 = y2 = y;
+                    fillAll();
+
+                    setCursor(c, 'crosshair');
+            }
+            pos.x1 = x1;
+            pos.x2 = x2;
+            pos.y1 = y1;
+            pos.y2 = y2;
             pos.down = true;
-            pos.x1 = pos.x2 = event.x;
-            pos.y1 = pos.y2 = event.y;
-            setCursor(c, 'crosshair');
         }
 
         function mousemove(event) {
             if (pos.down) {
-                pos.x2 = event.x;
-                pos.y2 = event.y;
+                let cursor = c.style.cursor;
+                switch (cursor) {
+                    case 'crosshair':
+                    case 'nesw-resize':
+                    case 'nwse-resize':
+                        pos.x2 = event.x;
+                        pos.y2 = event.y;
+                        break;
+                    case 'row-resize':
+                        pos.y2 = event.y;
+                        break;
+                    case 'col-resize':
+                        pos.x2 = event.x;
+                        break;
+                }
+
                 clearRect();
             } else if ((isInArea(pos.y1, 3)(event.y) && isInArea(pos.x1, 3)(event.x)) ||
                 (isInArea(pos.y2, 3)(event.y) && isInArea(pos.x2, 3)(event.x))) {
@@ -104,6 +161,7 @@
         function mouseup() {
             pos.down = false;
             setCursor(c, 'default');
+            console.log(pos);
         }
 
         c.addEventListener('mousedown', mousedown);
@@ -174,10 +232,14 @@
             return (val > range[0] && val < range[1]);
         }
 
+        function getTheClose(dot, x1, x2) {
+            return Math.abs(dot - x1) < Math.abs(dot - x2);
+        }
+
 
 
         let clipBtn = document.getElementById('copy');
-        clipBtn.addEventListener('click', function(){
+        clipBtn.addEventListener('click', function () {
             let {
                 x1,
                 x2,
@@ -188,11 +250,11 @@
             y1 = y1 > y2 ? [y2, y2 = y1][0] : y1;
 
             let canvas = document.createElement('canvas');
-            
-            canvas.width = x2-x1;
-            canvas.height = y2 -y1;
+
+            canvas.width = x2 - x1;
+            canvas.height = y2 - y1;
             let ctx = canvas.getContext('2d');
-            ctx.drawImage( img, x1, y1, x2-x1, y2-y1, 0, 0, x2-x1, y2-y1);
+            ctx.drawImage(img, x1, y1, x2 - x1, y2 - y1, 0, 0, x2 - x1, y2 - y1);
 
             result.src = canvas.toDataURL("image/png");
 
