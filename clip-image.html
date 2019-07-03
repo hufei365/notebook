@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>clip image</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <style>
+        body > div {
+            position: relative;
+            float: left;
+        }
+
+        img {
+            display: block;
+        }
+
+        canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+            cursor: default;
+        }
+    </style>
+    <div class="img-box">
+        <img id="img" src="images/bridge.jpg">
+        <canvas id="c"></canvas>
+    </div>
+    <div>
+        <button id="copy"> copy clip</button>
+        <img src="" id="result" >
+    </div>
+
+    <script>
+        const WIDTH = 1000,
+            HEIGHT = 667;
+        c.width = WIDTH;
+        c.height = HEIGHT;
+
+        let ctx = c.getContext('2d');
+        ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+
+        function fillAll() {
+            ctx.clearRect(0, 0, WIDTH, HEIGHT);
+            ctx.fillRect(0, 0, WIDTH, HEIGHT);
+            return true;
+        }
+        fillAll();
+
+        let pos = {
+            x1: 0,
+            y1: 0,
+            x2: 0,
+            y2: 0
+        };
+
+        function mousedown(event) {
+            fillAll();
+            pos.down = true;
+            pos.x1 = pos.x2 = event.x;
+            pos.y1 = pos.y2 = event.y;
+            setCursor(c, 'crosshair');
+        }
+
+        function mousemove(event) {
+            if (pos.down) {
+                pos.x2 = event.x;
+                pos.y2 = event.y;
+                clearRect();
+            } else if ((isInArea(pos.y1, 3)(event.y) && isInArea(pos.x1, 3)(event.x)) ||
+                (isInArea(pos.y2, 3)(event.y) && isInArea(pos.x2, 3)(event.x))) {
+                setCursor(c, 'nwse-resize');
+            } else if (
+                (isInArea(pos.y1, 3)(event.y) && isInArea(pos.x2, 3)(event.x)) ||
+                (isInArea(pos.y2, 3)(event.y) && isInArea(pos.x1, 3)(event.x))
+            ) {
+                setCursor(c, 'nesw-resize');
+            } else if (isInRange([pos.x1, pos.x2], event.x) && (isInArea(pos.y1, 2)(event.y) || isInArea(pos.y2, 2)(
+                    event.y))) {
+                setCursor(c, 'row-resize');
+            } else if (isInRange([pos.y1, pos.y2], event.y) && (isInArea(pos.x1, 2)(event.x) || isInArea(pos.x2, 2)(
+                    event.x))) {
+                setCursor(c, 'col-resize');
+
+            } else {
+                setCursor(c, 'default');
+            }
+        }
+
+        function mouseup() {
+            pos.down = false;
+            setCursor(c, 'default');
+        }
+
+        c.addEventListener('mousedown', mousedown);
+        c.addEventListener('mousemove', throttle(mousemove, 50));
+        c.addEventListener('mouseup', mouseup);
+
+        function clearRect() {
+
+            fillAll();
+            ctx.clearRect(pos.x1, pos.y1, (pos.x2 - pos.x1), (pos.y2 - pos.y1));
+            drawCorner();
+
+        }
+
+        function drawCorner(len = 10) {
+
+            let {
+                x1,
+                x2,
+                y1,
+                y2
+            } = pos;
+            x1 = x1 > x2 ? [x2, x2 = x1][0] : x1;
+            y1 = y1 > y2 ? [y2, y2 = y1][0] : y1;
+
+            ctx.strokeStyle = "rgba(0, 0, 0, 1)";
+            ctx.beginPath();
+            ctx.moveTo(x1 + len, y1);
+            ctx.lineTo(x1, y1);
+            ctx.lineTo(x1, y1 + len);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(x2 - len, y1);
+            ctx.lineTo(x2, y1);
+            ctx.lineTo(x2, y1 + len);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(x1 + len, y2);
+            ctx.lineTo(x1, y2);
+            ctx.lineTo(x1, y2 - len);
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(x2 - len, y2);
+            ctx.lineTo(x2, y2);
+            ctx.lineTo(x2, y2 - len);
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        function setCursor(target, style = "default") {
+            (target || document).style.cursor = style;
+        }
+
+        function isInArea(start, range = 3) {
+            let area = [start - range, start + range];
+            return function (val) {
+                return isInRange(area, val);
+            }
+        }
+
+        function isInRange(range, val) {
+            return (val > range[0] && val < range[1]);
+        }
+
+
+
+        let clipBtn = document.getElementById('copy');
+        clipBtn.addEventListener('click', function(){
+            let {
+                x1,
+                x2,
+                y1,
+                y2
+            } = pos;
+            x1 = x1 > x2 ? [x2, x2 = x1][0] : x1;
+            y1 = y1 > y2 ? [y2, y2 = y1][0] : y1;
+
+            let canvas = document.createElement('canvas');
+            
+            canvas.width = x2-x1;
+            canvas.height = y2 -y1;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage( img, x1, y1, x2-x1, y2-y1, 0, 0, x2-x1, y2-y1);
+
+            result.src = canvas.toDataURL("image/png");
+
+            fillAll();
+        });
+
+
+        function throttle(fn, time) {
+            let prev = +new Date;
+
+            return function (...args) {
+                let ctx = this;
+                if (((+new Date) - prev) > time) {
+                    fn.apply(ctx, args);
+                    prev = +new Date;
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
