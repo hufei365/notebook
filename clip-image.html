@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>canvas</title>
+    <title>canvas clip</title>
     <style>
         html,
         body {
@@ -36,8 +36,8 @@
             cursor: default;
         }
     </style>
-    <div class="img-box">
-        <img id="img" src="images/bridge.jpg">
+    <div class="img-box" style="margin-left: 17px;">
+        <img id="img" src="/1200x1200.jpg">
         <canvas id="c"></canvas>
     </div>
     <div>
@@ -46,11 +46,15 @@
     </div>
 
     <script>
-        const WIDTH = 1000,
-            HEIGHT = 667;
+        const WIDTH = 1200,
+            HEIGHT = 1200;
+        let pos = {},
+            isMove = false,
+            mouseDown = false,
+            origin = null;
+
         c.width = WIDTH;
         c.height = HEIGHT;
-
         let ctx = c.getContext('2d');
         ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
 
@@ -60,26 +64,21 @@
             return true;
         }
         fillAll();
+        resetPos();
 
-        let pos = {
-            x1: 0,
-            y1: 0,
-            x2: 0,
-            y2: 0
-        };
 
-        function mousedown(event) {
+        function mousedownHandler(event) {
             let cursor = c.style.cursor;
             let {
-                x,
-                y
+                offsetX: x,
+                offsetY: y
             } = event, {
                 x1,
                 y1,
                 x2,
                 y2
             } = pos;
-            console.log(cursor);
+
             switch (cursor) {
                 case 'nesw-resize':
                     if (getTheClose(x, x1, x2) && getTheClose(y, y2, y1)) {
@@ -94,98 +93,166 @@
                         y1 = y2;
                     }
                     break;
-                case 'row-size':
+                case 'row-resize':
                     if (getTheClose(y, y1, y2)) {
                         y1 = y2;
                     }
                     break;
-                case 'col-size':
+                case 'col-resize':
                     if (getTheClose(x, x1, x2)) {
                         x1 = x2;
                     }
                     break;
+                case 'move':
+                    isMove = true;
+                    origin = {
+                        x,
+                        y
+                    };
+                    break;
                 default:
-                    console.log('default'+new Date);
                     x1 = x2 = x;
                     y1 = y2 = y;
                     fillAll();
-
                     setCursor(c, 'crosshair');
             }
-            pos.x1 = x1;
-            pos.x2 = x2;
-            pos.y1 = y1;
-            pos.y2 = y2;
-            pos.down = true;
+            if (!isMove) {
+                pos.x1 = x1;
+                pos.x2 = x2;
+                pos.y1 = y1;
+                pos.y2 = y2;
+
+            }
+                mouseDown = true;
         }
 
         function mousemove(event) {
-            if (pos.down) {
+            let {
+                offsetX: x,
+                offsetY: y
+            } = event;
+            let {
+                x1,
+                y1,
+                x2,
+                y2
+            } = pos;
+
+            let r = 5,
+                l = 3;
+            if (mouseDown) {
                 let cursor = c.style.cursor;
                 switch (cursor) {
                     case 'crosshair':
                     case 'nesw-resize':
                     case 'nwse-resize':
-                        pos.x2 = event.x;
-                        pos.y2 = event.y;
+                        x2 = x;
+                        y2 = y;
                         break;
                     case 'row-resize':
-                        pos.y2 = event.y;
+                        y2 = y;
                         break;
                     case 'col-resize':
-                        pos.x2 = event.x;
+                        x2 = x;
+                        break;
+                    case 'move':
+                        x1 = x1 + x - origin.x;
+                        x2 = x2 + x - origin.x;
+                        y1 = y1 + y - origin.y;
+                        y2 = y2 + y - origin.y;
+                        if(x1 < 0 || x2 < 0 || y1 <0 || y2 < 0 || x1 > WIDTH || x2 > WIDTH || y1 > HEIGHT || y2 > HEIGHT){
+                            x1 = pos.x1;
+                            x2 = pos.x2;
+                            y1 = pos.y1;
+                            y2 = pos.y2;
+                        } else {
+                            pos.x1 = x1;
+                            pos.x2 = x2;
+                            pos.y1 = y1;
+                            pos.y2 = y2;
+                            pos = reverXY();
+                        }
                         break;
                 }
-
-                clearRect();
-            } else if ((isInArea(pos.y1, 3)(event.y) && isInArea(pos.x1, 3)(event.x)) ||
-                (isInArea(pos.y2, 3)(event.y) && isInArea(pos.x2, 3)(event.x))) {
+                clearRect(x1, y1, x2, y2);
+            } else if ((isInArea(pos.y1, r)(y) && isInArea(pos.x1, r)(x)) ||
+                (isInArea(pos.y2, r)(y) && isInArea(pos.x2, r)(x))) {
                 setCursor(c, 'nwse-resize');
             } else if (
-                (isInArea(pos.y1, 3)(event.y) && isInArea(pos.x2, 3)(event.x)) ||
-                (isInArea(pos.y2, 3)(event.y) && isInArea(pos.x1, 3)(event.x))
+                (isInArea(pos.y1, r)(y) && isInArea(pos.x2, r)(x)) ||
+                (isInArea(pos.y2, r)(y) && isInArea(pos.x1, r)(x))
             ) {
                 setCursor(c, 'nesw-resize');
-            } else if (isInRange([pos.x1, pos.x2], event.x) && (isInArea(pos.y1, 2)(event.y) || isInArea(pos.y2, 2)(
-                    event.y))) {
+            } else if (isInRange([pos.x1, pos.x2], x) && (isInArea(pos.y1, l)(y) || isInArea(pos.y2, l)(
+                    y))) {
                 setCursor(c, 'row-resize');
-            } else if (isInRange([pos.y1, pos.y2], event.y) && (isInArea(pos.x1, 2)(event.x) || isInArea(pos.x2, 2)(
-                    event.x))) {
+            } else if (isInRange([pos.y1, pos.y2], y) && (isInArea(pos.x1, l)(x) || isInArea(pos.x2, l)(
+                    x))) {
                 setCursor(c, 'col-resize');
-
+            } else if (isInRect(pos.x1, pos.y1, pos.x2, pos.y2)(x, y, r)) {
+                setCursor(c, 'move');
             } else {
                 setCursor(c, 'default');
             }
         }
 
-        function mouseup() {
-            pos.down = false;
+        function mouseup(event) {
+            let {
+                offsetX: x,
+                offsetY: y
+            } = event;
+            let cursor = c.style.cursor;
+            switch (cursor) {
+                case 'crosshair':
+                case 'nesw-resize':
+                case 'nwse-resize':
+                    pos.x2 = x;
+                    pos.y2 = y;
+                    break;
+                case 'row-resize':
+                    pos.y2 = y;
+                    break;
+                case 'col-resize':
+                    pos.x2 = x;
+                    break;
+                case 'move':
+                    pos = {
+                        x1: pos.x1 + x - origin.x,
+                        x2: pos.x2 + x - origin.x,
+                        y1: pos.y1 + y - origin.y,
+                        y2: pos.y2 + y - origin.y
+                    }
+                    break;
+            }
+            mouseDown = false;
+            isMove = false;
             setCursor(c, 'default');
-            console.log(pos);
+            pos = reverXY();
         }
+        c.addEventListener('mousedown', mousedownHandler);
+        document.addEventListener('mousemove', throttle(mousemove, 50));
+        document.addEventListener('mouseup', mouseup);
 
-        c.addEventListener('mousedown', mousedown);
-        c.addEventListener('mousemove', throttle(mousemove, 50));
-        c.addEventListener('mouseup', mouseup);
-
-        function clearRect() {
-
+        function clearRect(x1, y1, x2, y2) {
             fillAll();
-            ctx.clearRect(pos.x1, pos.y1, (pos.x2 - pos.x1), (pos.y2 - pos.y1));
-            drawCorner();
-
+            // ctx.clearRect();
+            ctx.clearRect(x1, y1, x2 - x1, y2 - y1);
+            drawCorner(x1, y1, x2, y2);
         }
 
-        function drawCorner(len = 10) {
+        function drawCorner(m1, n1, m2, n2, len = 10) {
+
+
+            m1 = m1 > m2 ? [m2, m2 = m1][0] : m1;
+            n1 = n1 > n2 ? [n2, n2 = n1][0] : n1;
+
 
             let {
                 x1,
-                x2,
                 y1,
+                x2,
                 y2
-            } = pos;
-            x1 = x1 > x2 ? [x2, x2 = x1][0] : x1;
-            y1 = y1 > y2 ? [y2, y2 = y1][0] : y1;
+            } = limitMinAndMax(m1, m2, n1, n2);
 
             ctx.strokeStyle = "rgba(0, 0, 0, 1)";
             ctx.beginPath();
@@ -194,21 +261,18 @@
             ctx.lineTo(x1, y1 + len);
             ctx.stroke();
             ctx.closePath();
-
             ctx.beginPath();
             ctx.moveTo(x2 - len, y1);
             ctx.lineTo(x2, y1);
             ctx.lineTo(x2, y1 + len);
             ctx.stroke();
             ctx.closePath();
-
             ctx.beginPath();
             ctx.moveTo(x1 + len, y2);
             ctx.lineTo(x1, y2);
             ctx.lineTo(x1, y2 - len);
             ctx.stroke();
             ctx.closePath();
-
             ctx.beginPath();
             ctx.moveTo(x2 - len, y2);
             ctx.lineTo(x2, y2);
@@ -221,7 +285,86 @@
             (target || document).style.cursor = style;
         }
 
-        function isInArea(start, range = 3) {
+        function resetPos() {
+            pos = {
+                x1: 0,
+                y1: 0,
+                x2: 0,
+                y2: 0
+            }
+        }
+        /**
+         * 如果x2 > x1;则反转
+         */
+        function reverXY() {
+
+            let {
+                x1,
+                x2,
+                y1,
+                y2
+            } = resort(pos);
+
+            return limitMinAndMax(x1, x2, y1, y2);
+        }
+
+        function limitMinAndMax(x1, x2, y1, y2) {
+
+
+            x1 = x1 > 0 ? x1 : 0;
+            y1 = y1 > 0 ? y1 : 0;
+
+            if (x2 > WIDTH) {
+                x2 = WIDTH;
+            }
+            if (y2 > HEIGHT) {
+                y2 = HEIGHT;
+            }
+
+            return {
+                x1,
+                y1,
+                x2,
+                y2
+            }
+        }
+
+        function resort({
+            x1,
+            y1,
+            x2,
+            y2
+        }) {
+            x1 = x1 > x2 ? [x2, x2 = x1][0] : x1;
+            y1 = y1 > y2 ? [y2, y2 = y1][0] : y1;
+
+            return {
+                x1,
+                y1,
+                x2,
+                y2
+            };
+        }
+
+        function isInRect(m1, n1, m2, n2) {
+            let {
+                x1,
+                y1,
+                x2,
+                y2
+            } = resort({
+                x1: m1,
+                y1: n1,
+                x2: m2,
+                y2: n2
+            });
+
+            return function (x, y, range = 5) {
+                return x1 + 5 < x && x < x2 - 5 && y1 + 5 < y && y2 - 5 > y;
+            }
+        }
+
+        function isInArea(start, range = 5) {
             let area = [start - range, start + range];
             return function (val) {
                 return isInRange(area, val);
@@ -235,9 +378,6 @@
         function getTheClose(dot, x1, x2) {
             return Math.abs(dot - x1) < Math.abs(dot - x2);
         }
-
-
-
         let clipBtn = document.getElementById('copy');
         clipBtn.addEventListener('click', function () {
             let {
@@ -248,23 +388,17 @@
             } = pos;
             x1 = x1 > x2 ? [x2, x2 = x1][0] : x1;
             y1 = y1 > y2 ? [y2, y2 = y1][0] : y1;
-
             let canvas = document.createElement('canvas');
-
             canvas.width = x2 - x1;
             canvas.height = y2 - y1;
             let ctx = canvas.getContext('2d');
             ctx.drawImage(img, x1, y1, x2 - x1, y2 - y1, 0, 0, x2 - x1, y2 - y1);
-
             result.src = canvas.toDataURL("image/png");
-
             fillAll();
         });
 
-
         function throttle(fn, time) {
             let prev = +new Date;
-
             return function (...args) {
                 let ctx = this;
                 if (((+new Date) - prev) > time) {
