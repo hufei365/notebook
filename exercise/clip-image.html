@@ -51,6 +51,7 @@
         let pos = {},
             isMove = false,
             mouseDown = false,
+            last = {},
             origin = null;
 
         c.width = WIDTH;
@@ -105,10 +106,18 @@
                     break;
                 case 'move':
                     isMove = true;
+                    
                     origin = {
                         x,
                         y
                     };
+                    last = {
+                        x1: pos.x1,
+                        x2: pos.x2,
+                        y1: pos.y1,
+                        y2: pos.y2
+                    };
+
                     break;
                 default:
                     x1 = x2 = x;
@@ -161,16 +170,16 @@
                         y1 = y1 + y - origin.y;
                         y2 = y2 + y - origin.y;
                         if(x1 < 0 || x2 < 0 || y1 <0 || y2 < 0 || x1 > WIDTH || x2 > WIDTH || y1 > HEIGHT || y2 > HEIGHT){
-                            x1 = pos.x1;
-                            x2 = pos.x2;
-                            y1 = pos.y1;
-                            y2 = pos.y2;
+                            x1 = last.x1;
+                            x2 = last.x2;
+                            y1 = last.y1;
+                            y2 = last.y2;
                         } else {
-                            pos.x1 = x1;
-                            pos.x2 = x2;
-                            pos.y1 = y1;
-                            pos.y2 = y2;
-                            pos = reverXY();
+                            last.x1 = x1;
+                            last.x2 = x2;
+                            last.y1 = y1;
+                            last.y2 = y2;
+                            last = reverXY(last);
                         }
                         break;
                 }
@@ -296,14 +305,14 @@
         /**
          * 如果x2 > x1;则反转
          */
-        function reverXY() {
-
+        function reverXY(coordinate) {
+            coordinate = coordinate || pos;
             let {
                 x1,
                 x2,
                 y1,
                 y2
-            } = resort(pos);
+            } = resort(coordinate);
 
             return limitMinAndMax(x1, x2, y1, y2);
         }
