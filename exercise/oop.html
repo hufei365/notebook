@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>JS OOP</title>
+</head>
+
+<body>
+    <script>
+        function Father() {
+            this.name = '100'
+        }
+
+        Father.prototype.say = function () {
+            console.log("Father's say is called!!!")
+        }
+
+        function Son() {
+            this.name = "200"
+        }
+
+        Son.prototype = new Father();
+        Son.prototype.constructor = Son;
+
+        var s = new Son();
+
+
+        var l = console.log;
+
+        l('s instanceof Son', s instanceof Son)
+        l('s instanceof Father', s instanceof Father)
+
+        function GrandSon() {
+            this.name = "300"
+        }
+
+        GrandSon.prototype = new Son()
+        GrandSon.prototype.constructor = GrandSon;
+
+        var gs = new GrandSon()
+        l('gs instanceof Son', gs instanceof Son)
+        l('gs instanceof Father', gs instanceof Father)
+        gs.say()    
+    </script>
+</body>
+
+</html>
