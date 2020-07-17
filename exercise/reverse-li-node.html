@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Test</title>
+</head>
+
+<body>
+    <script>
+        const N = 4; // 四种方式
+        const count = 300; // 循环次数
+
+        for (let n = 0; n < N; n++) {
+            const box = document.createElement('ul');
+            box.id = `box${n}`;
+            appendChild(box);
+            document.body.appendChild(box);
+        }
+        test.apply(window, new Array1(N).map((x, i) => window[`func${i}`]));
+        
+        function func0() {
+            const list = box0.querySelectorAll('li');
+            for (let i = list.length-1; i >= 0; i--) {
+                box0.appendChild(list[i])
+            }
+        }
+
+        function func1() {
+            const list = box1.querySelectorAll('li');
+            const fragment = document.createDocumentFragment();
+            for (let i = list.length - 1; i >= 0; i--) {
+                fragment.appendChild(list[i]);
+            }
+            box1.appendChild(fragment);
+
+        }
+
+        function func2() {
+            const list = Array.prototype.slice.call(box2.querySelectorAll('li'));
+            let str = '';
+            list.reverse();
+            for (let i = 0; i < list.length; i++) {
+                str += list[i].outerHTML;
+            }
+            box2.innerHTML = str;
+        }
+
+        function func3() {
+            const list = Array.prototype.slice.call(box3.querySelectorAll('li'));
+            let str = '';
+            for (let i = list.length - 1; i >= 0; i--) {
+                str += `<li> ${list[i].innerHTML} </li>`
+            }
+            box3.innerHTML = str;
+        }
+
+        function doRepeatCall(fn, count, ...args) {
+            for (let i = 0; i < count; i++) {
+                fn.apply(this, args);
+            }
+        }
+
+        function test(...args) {
+            args.forEach(f => {
+                console.time(f.name)
+                doRepeatCall(f, count);
+                console.timeEnd(f.name)
+            })
+        }
+
+        function appendChild(box) {
+            for (let i = 0; i < 1000; i++) {
+                let li = document.createElement('li');
+                li.innerText = `${box.id}  ${i + 1}`;
+                box.appendChild(li);
+            }
+        }
+        function Array1(n) {
+            let arr = new Array(n);
+            for (let i = 0; i < n; i++) {
+                arr[i] = i;
+            }
+            return arr;
+        }
+
+    </script>
+</body>
+
+</html>
