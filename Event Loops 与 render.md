@@ -46,3 +46,9 @@ Event Loops中，任务队列实际上是个任务集合，并不是传统意义
 }
 ```
 
+4. ## setTimeout与红黑树
+- setTimeout：其回调存放在红黑树中，查找效率O(lg(n));
+- nextTick：其回调存放在数组中，查找效率O(1);
+- setImmediate：其回调存放在链表中；
+
+
