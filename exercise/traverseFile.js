@@ -1,3 +1,8 @@
+/**
+ * shell 命令统计某个文件下的所有文件数量 
+ * ls -Rl | grep '^-' | wc -l
+ */
+
 const { join, resolve } = require('path')
 const { readFileSync, readdirSync, statSync } = require('fs')
 
