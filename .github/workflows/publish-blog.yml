@@ -1,0 +1,48 @@
+name: Prepare blog publication
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled, reopened]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to prepare
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: blog-publisher
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.issue.labels.*.name, 'ready-to-publish') ||
+      contains(github.event.issue.labels.*.name, 'unpublish') ||
+      contains(github.event.issue.labels.*.name, 'published')
+    runs-on: ubuntu-latest
+    environment: blog-publication
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/publication.test.mjs
+      - name: Prepare or update publication PR
+        run: node scripts/publish-blog.mjs --apply
+        env:
+          ISSUE_NUMBER: ${{ inputs.issue_number }}
+          SOURCE_TOKEN: ${{ github.token }}
+          PUBLISHER_TOKEN: ${{ secrets.PUBLISHER_TOKEN }}
+          SEE_API_TOKEN: ${{ secrets.SEE_API_TOKEN }}
+          SOURCE_REPO: hufei365/notebook
+          SITE_REPO: hufei365/hufei.github.io
+          IMAGE_REPO: hufei365/myimages
+          IMAGE_BRANCH: zhihu
