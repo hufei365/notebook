@@ -1,0 +1,32 @@
+name: Verify published articles
+
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: blog-publication-verification
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify online content before updating issue labels
+        run: node scripts/verify-publications.mjs --apply
+        env:
+          SOURCE_TOKEN: ${{ github.token }}
+          SOURCE_REPO: hufei365/notebook
+          SITE_REPO: hufei365/hufei.github.io
+          SITE_URL: https://hufeispace.com
