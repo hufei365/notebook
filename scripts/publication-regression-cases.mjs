@@ -66,7 +66,8 @@ test('reverting A to B to A synchronizes the existing PR instead of skipping it'
   const articlePath = 'src/content/blog/issue-53.md';
   const statePath = '.publication/issue-53.json';
   const b = { ...issue, body: '版本 B' };
-  const markdown = (value) => Buffer.from(renderPost(value, value.body, sourceHashFor(value)));
+  const markdown = (value) => Buffer.from(renderPost(value, value.body, sourceHashFor(value),
+    "---\ndescription: '已有摘要'\n---\n旧正文\n"));
   const files = new Map([
     [`main:${articlePath}`, markdown(issue)], [`main:${statePath}`, bytesOf(stateFor(issue))],
     [`${branch}:${articlePath}`, markdown(b)], [`${branch}:${statePath}`, bytesOf(stateFor(b))],

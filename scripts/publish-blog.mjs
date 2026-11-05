@@ -158,7 +158,7 @@ export async function main() {
       mediaMap.set(url, record.primaryUrl);
     }
     const body = replaceImages(issue.body, references, mediaMap);
-    const markdown = renderPost(issue, body, sourceHash);
+    const markdown = renderPost(issue, body, sourceHash, existing?.bytes.toString('utf8') ?? null);
     renderedHash = sha256(markdown);
     await site.put(siteRepo, path, branch, Buffer.from(markdown), message);
   } else {

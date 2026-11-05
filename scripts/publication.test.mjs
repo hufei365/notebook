@@ -9,6 +9,16 @@ const issue = { number: 53, title: '含有引号 " 和冒号: 的标题', body: 
   created_at: '2026-05-27T13:05:07Z', html_url: 'https://github.com/hufei365/notebook/issues/53',
   labels: [{ name: 'AI' }, { name: 'ready-to-publish' }] };
 
+test('existing descriptions are preserved as JSON-compatible YAML', () => {
+  const old = "---\r\ntitle: '旧标题'\r\ndescription: 'Can''t: 中文摘要'\r\ntags: []\r\n---\r\n\r\n正文\r\n";
+  const updated = renderPost(issue, issue.body, sourceHashFor(issue), old);
+  assert.match(updated, /^description: "Can't: 中文摘要"$/m);
+  const multiline = '---\ndescription: >-\n  第一行\n  第二行\ntags: []\n---\n正文\n';
+  assert.throws(() => renderPost(issue, issue.body, sourceHashFor(issue), multiline), /unsupported description/i);
+  assert.match(renderPost(issue, issue.body, sourceHashFor(issue)), /^description: "含有引号/m);
+  assert.throws(() => renderPost(issue, issue.body, sourceHashFor(issue), 'no frontmatter'), /frontmatter/i);
+});
+
 test('historical published labels do not create missing source files', () => {
   const historic = { ...issue, labels: [{ name: 'published' }] };
   assert.equal(publicationIntent(historic, false), null);
