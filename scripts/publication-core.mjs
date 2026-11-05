@@ -69,13 +69,37 @@ export function replaceImages(body, references, mapping) {
   return output;
 }
 
-export function renderPost(issue, body, sourceHash) {
+function existingDescriptionField(markdown) {
+  if (markdown == null) return null;
+  const normalized = markdown.replace(/\r\n/g, '\n');
+  const frontmatter = normalized.match(/^---[ \t]*\n([\s\S]*?)\n---[ \t]*(?:\n|$)/);
+  if (!frontmatter) throw new Error('Existing article has invalid frontmatter.');
+  const lines = frontmatter[1].split('\n');
+  const matches = lines.flatMap((line, index) => /^(?:description|'description'|"description")[ \t]*:/.test(line) ? [index] : []);
+  if (matches.length > 1) throw new Error('Existing article has duplicate description fields.');
+  if (!matches.length) return null;
+  const start = matches[0];
+  const scalar = lines[start].slice(lines[start].indexOf(':') + 1).trim();
+  if (start + 1 < lines.length && /^[ \t]+\S/.test(lines[start + 1])) throw new Error('Unsupported description format: multiline YAML.');
+  const singleQuoted = scalar.match(/^'((?:[^']|'')*)'$/);
+  let value;
+  if (singleQuoted) value = singleQuoted[1].replace(/''/g, "'");
+  else if (scalar.startsWith('"')) {
+    try { value = JSON.parse(scalar); } catch { throw new Error('Unsupported description format: invalid JSON string.'); }
+  } else throw new Error('Unsupported description format: expected a quoted string.');
+  if (typeof value !== 'string' || !value.trim()) throw new Error('Unsupported description format: expected a nonempty string.');
+  return value;
+}
+
+export function renderPost(issue, body, sourceHash, existingMarkdown = null) {
   if (!Number.isSafeInteger(issue.number) || issue.number <= 0) throw new Error('Invalid issue number.');
   if (!issue.title?.trim() || !body?.trim()) throw new Error('Title and body are required.');
   if (Number.isNaN(Date.parse(issue.created_at))) throw new Error('Invalid publication date.');
   const fields = { title: issue.title, pubDate: issue.created_at,
     description: issue.title, tags: tagsFor(issue), sourceIssue: issue.number,
     sourceUrl: issue.html_url, sourceHash };
+  const description = existingDescriptionField(existingMarkdown);
+  if (description !== null) fields.description = description;
   return '---\n' + Object.entries(fields).map(([key, value]) => `${key}: ${JSON.stringify(value)}`).join('\n')
     + '\n---\n\n' + body.replace(/\r\n/g, '\n').trim() + '\n';
 }
